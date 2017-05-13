@@ -1,0 +1,100 @@
+\section{Advanced Topics in Computability Theory}
+
+\subsection{A Definition of Information}
+
+We define the quantity of information contained in an object to be the size of that object's smallest representation or description.
+
+\subsubsection{Minimal Length Descriptions}
+
+We describe a binary string $x$ with a Turing machine $M$ and a binary input $w$ to $M$. The length of the description is the combined  length of representing $M$ and $w$. 
+
+We define the string $\desc{M, w}$ to be $\desc{M}w$, where we simply concatenate the binary string $w$ onto the end of the binary encoding of $M$.
+
+\begin{shaded}
+\textbf{ITOC - Definition 6.23}
+
+\medskip
+Let $x$ be a binary string. The \textbf{minimal description} of $x$, written $d(x)$, is the shorted string $\desc{M, w}$ where TM $M$ on input $w$ halts with $x$ on its tape. The \textbf{descriptive complexity} of $x$, written $K(x)$, is $K(x) = |d(x)|$.
+\end{shaded}
+
+{\color{blue} $K(x)$ is the length of the minimal description of $x$}.
+
+
+\begin{shaded}
+\textbf{ITOC - Theorem 6.24}
+\[
+\exists c \; \forall x \;  [K(x) \leq |x| + c]
+\]
+\end{shaded}
+
+The descriptive complexity of a string is at most a fixed constant more than its length. The constant is a universal one, not dependent on the string.
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ be a Turing machine that halts as soon as it is started. A description of $x$ is simply $\desc{M}x$, $c$ is the length of $\desc{M}$.
+\end{proof}
+\end{mdframed}
+
+The amount of information contained by a string cannot be (substantially) more than its length.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 6.25}
+\[
+\exists c \; \forall x \;  [K(xx) \leq K(x) + c]
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Consider TM $M$, which expects an input of the form $\desc{N, w}$, where $N$ is a TM and $w$ is an input for it.
+
+$M$ = On input $\desc{N, w}$
+\begin{enumerate}
+\item Run $N$ on $w$ until it halts and produces an output string $s$.
+\item Output string ss.
+\end{enumerate}
+
+A description of $xx$ is $\desc{M}d(x)$. The length of this description is $|\desc{M}| + |d(x)| = c + K(x)$, where $c$ is the length of $\desc{M}$.
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 6.25}
+\[
+\exists c \; \forall x,y \;  [K(xy) \leq 2K(x) _ K(y) + c]
+\]
+
+can be improved to
+\[
+K(xy) \leq 2\log_2(K(x)) + K(x) + K(y) + c
+\]
+\end{shaded}
+
+\begin{shaded}
+For any description language $p$, a fixed constant $c$ exists that depends only on $p$ where
+\[
+\forall x \; [K(x) \leq K_p(x) + c]
+\]
+\end{shaded}
+
+\subsubsection{Incompressible Strings and Randomness}
+
+\begin{shaded}
+\textbf{ITOC - Definition 6.28}
+
+\medskip
+Let $x$ be a string. Say that $x$ is \textbf{$c$-compressible} if
+\[
+K(x) \leq |x| - c
+\]
+If $x$ is not $c$-compressible, say that $x$ is \textbf{incompressible  by $c$}.
+
+If $x$ is incompressible by 1, say that $x$ is \textbf{incompressible}.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 6.29}
+
+\medskip
+Incompressible strings of every length exist.
+\end{shaded}

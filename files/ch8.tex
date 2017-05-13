@@ -1,0 +1,461 @@
+\section{Space Complexity}
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.1}
+
+\medskip
+Let $M$ be a deterministic Turing machine that halts on all inputs. The \textbf{space complexity} of $M$ is the function $f:\mathbb{N} \rightarrow \mathbb{N}$, where $f(n)$ is the maximum number of tape cells that $M$ scans on any input of length $n$. 
+
+If $M$ is an NDTM wherein all branches halt on all inputs, we define its space complexity $f(n)$ to be the maximum number of tape cells that $M$ scans on \textbf{any branch} of its computation for any input of length $n$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.2}
+
+\medskip
+Let $f:\mathbb{N} \rightarrow \mathbb{R}^+$ be a function. The \textbf{space complexity classes}, \textbf{SPACE($f(n)$)} and \textbf{NSPACE($f(n)$)}, are defined as follows.
+\begin{align*}
+\SPACE(f(n)) &= \{ L \mid \text{$L$ is a language decided by an $O(f(n))$ space DTM} \} \\
+\NSPACE(f(n)) &= \{ L \mid \text{$L$ is a language decided by an $O(f(n))$ space NDTM} \}
+\end{align*}
+\end{shaded}
+
+\label{lang:SAT_PSAPCE}
+\begin{shaded}
+\textbf{ITOC - Example 8.3}
+
+\medskip
+$SAT \in \PSPACE$.
+\end{shaded} 
+Space appears to be more powerful than time because space can be reused, whereas time cannot.
+
+\begin{mdframed}
+$M_1$ = On input $\desc{\phi}$, where $\phi$ is a Boolean formula:
+\begin{enumerate}
+\item For each truth assignment to the variables $x_1, \ldots, x_m$ of $\phi$:
+\item $\quad$ Evaluate $\phi$ on that truth assignment.
+\item If $\phi$ ever evaluated to 1, \textit{accept}; if not, \textit{reject}.
+\end{enumerate}
+
+$M_1$ clearly runs in linear space because each iteration of the loop can reuse the same portion of the  tape. Only needs to store the current truth assignment.
+\end{mdframed}
+
+\label{lang:ALLNFA_PSAPCE}
+\begin{shaded}
+\textbf{ITOC - Example 8.4}
+
+\medskip
+$ALL_\NFA \in \PSPACE$
+\[
+ALL_\NFA = \{\desc{A} \mid A \text{ is an NFA and } L(A) = \Sigma^* \}
+\]
+\end{shaded} 
+
+\begin{mdframed}
+\begin{proof}
+Give a nondeterministic linear space algorithm that decides $\overline{ALL_\NFA}$. Use nondeterminism to guess a string that is rejected by the NFA and to use linear space to keep track of which states the NFA could be in at a particular time.
+
+\medskip
+$N$ = On input $\desc{M}$, where $M$ is an NFA:
+\begin{enumerate}
+\item Place a marker on the start state of the NFA.
+\item Repeat $2^q$ times, where $q$ is the number of states of $M$:
+\item $\quad$ Nondeterministically select an input symbol and change the positions of the markers on $M$'s states to simulate reading that symbol.
+\item \textit{Accept} if state 2 and 3 reveal some string that $M$ rejects; that is, if at some point none of the markers lie on accept states of $M$. Otherwise, \textit{reject}.
+\end{enumerate}
+
+If $M$ rejects any strings, it must reject one of length at most $2^q$ because in any longer string that is rejected, the locations of the markers described in the preceding algorithm would repeat.
+
+The only space needed by this algorithm is for storing the location of the markers and the repeat loop counter, and that can be done with linear space.
+\end{proof}
+\end{mdframed}
+
+\subsection{Savitch's Theorem}
+
+Savitch's theorem shows that DTM can simulate NDTM by using a small amount of space. For time complexity, such a simulation seems to require an exponential increase in time. For space complexity, Savitch's theorem shows that nay NDTM that uses $f(n)$ space can be converted to a DTM that uses only $f^2(n)$ space.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 8.5}
+
+\medskip
+\textbf{Savitch's theorem} 
+
+For any function $f:\mathbb{N} \rightarrow \mathbb{R}^+$, where $f(n) \geq n$, $\NSPACE(f(n)) \subseteq \SPACE(f^2(n))$
+\end{shaded}
+
+{\color{blue} Savitch's theorem also holds when $f(n) \geq \log n$.}
+
+\begin{mdframed}
+\begin{proof}
+Need to simulate an $f(n)$ space NDTM deterministically. A naive approach is to proceed by trying all the branches of the NDTM's computation, one by one. The simulation needs to keep track of which branch it is currently trying. {\color{blue} But a branch that uses $f(n)$ space may run for $2^{O(f(n))}$ steps and each step may be a nondeterministic choice.} Exploring the branches sequentially would require recording all the choices used on a particular branch in order to be able to find the next branch. Therefore, this approach may use $2^{O(f(n))}$ space.
+
+\medskip
+Give a deterministic, recursive algorithm that solves the yieldability problem. Given two configurations of the NDTM, $c_1$ and $c_2$ with a number $t$, test whether the NTM can get from $c_1$ to $c_2$ within $t$ steps using only $f(n)$ space.
+
+The algorithm operates by searching for an intermediate configuration $c_m$, and recursively testing whether (1) $c_1$ can get to $c_m$ within $t/2$ steps and (2) whether $c_m$ can get to $c_2$ within $t/2$ steps.
+
+This algorithm needs space for storing the recursion stack. Each level of the  recursion uses $O(f(n))$ space to store a configuration. The depth of the recursion is $\log t$, where $t$ is the maximum time that the NDTM may use on any branch. We have $t = 2^{O(f(n))}$, so $\log t = O(f(n))$ and the simulation the deterministic simulation uses $O(f^2(n))$ space.
+
+\medskip
+Let $N$ be an NDTM deciding $A$ in space $f(n)$. Construct a DTM $M$ deciding $A$. $M$ uses the procedure CANYIELD which tests whether one of $N$'s configurations can yield another within a specified number of steps.
+
+Let $w$ be an input to $N$. For $c_1$ and $c_2$ of $N$, and integer $t$, CANYIELD$(c_1, c_2, t)$ outputs \textit{accept} if $N$ can go from $c_1$ to $c_2$ in $t$ or fewer steps along some nondeterministic path. If not, CANYIELD outputs \textit{reject}. Assume that $t$ is a power of 2
+
+\medskip
+CANYIELD = On input $c_1$, $c_2$, and $t$:
+\begin{enumerate}
+\item If $t=1$, then test directly whether $c_1 = c_2$ or whether $c_1$ yields $c_2$ in one step according to the rules of $N$. If either test succeeds, \textit{accept}; otherwise, \textit{reject}.
+\item If $t>1$, then for each configuration $c_m$ of $N$ using space $f(n)$:
+\item $\quad$ Run CANYIELD$(c_1, c_m, t/2)$.
+\item $\quad$ Run CANYIELD$(c_m, c_2, t/2)$.
+\item $\quad$ If 3 and 4 both accept, then \textit{accept}.
+\item If haven't yet accepted, \textit{reject}.
+\end{enumerate}
+
+Modify $N$ so that when it accepts, it clears its tape and moves the head to the leftmost cell, entering a configuration called $c_\accept$. Let $c_\text{start}$ be the start configuration of $N$ on $w$. Select a constant $d$ so that $N$ has no more than $2^{df(n)}$ configurations using $f(n)$ tape.
+
+\medskip
+$M$ = On input $w$:
+\begin{enumerate}
+\item Output the result of CNAYIELD($c_\text{start}, c_\accept, 2^{df(n)}$)
+\end{enumerate}
+
+Whenever CANYIELD invokes itself recursively, it stores the current stage number and the values of $c_1, c_2 ,t$ on a stack so that these values may be restored upon return from the recursive invocation. Each level of the recursion thus uses $O(f(n))$ additional space. Further more, each level of the recursion divides the size of $t$ in half. Initially $t$ starts out equal to $2^{df(n)}$, so the depth of the recursion is $O(\log 2^{df(n)})$ or $O(f(n))$. Therefore the total space used is $O(f^2(n))$.
+\end{proof}
+\end{mdframed}
+
+\subsection{The Class PSPACE}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 8.6}
+
+\medskip
+\textbf{PSPACE} is the class of languages that are decidable in polynomial space on a deterministic Turing machine.
+\[
+\PSPACE = \bigcup_k \SPACE(n^k)
+\]
+\end{shaded}
+
+We define NPSPACE in terms of the NSPACE classes. However, PSPACE = NPSPACE by Savitch's theorem because the square of any polynomial is still a polynomial.
+
+$\P \subseteq \PSPACE$ because a machine that runs quickly cannot use a great deal of space. More precisely, for $t(n) \geq n$, any machine that operates in time $t(n)$ can use at most $t(n)$ space because a machine can explore at most one new cell at each of its computation.
+
+Similarly $\NP \subseteq \NPSPACE$ and so $\NP \subseteq \PSPACE$. Also because any problem in NP has a certificate that can be checked in poly time and so must not take up more than poly space. Thus, $\NP \subseteq \PSPACE$.
+
+Conversely, we can bound the time complexity of a TM in terms of its space complexity. For $f(n) \geq n$, a TM that uses $f(n)$ space can have at most $f(n)2^{O(f(n))}$ different configurations. A TM computation that halts may not repeat a configuration. Therefore, a TM that uses space $f(n)$ must run in time $f(n) 2^{O(f(n))}$, so $\PSPACE \subseteq EXPTIME = \bigcup_k \TIME(2^{n^k})$.
+
+\[
+\P \subseteq \NP \subseteq \PSPACE = \NPSPACE \subseteq \EXPTIME
+\]
+We don't know whether any of these containments is actually an equality.
+
+If a problem is in SPACE($s(n)$) for any function $s(n)$, then the problem is decidable. In particular, for $s(n) \geq n$, it has a TM bounded by time $O(2^{ks(n)})$.
+
+\subsection{PSPACE-Completeness}
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.8}
+
+\medskip
+A language $B$ is \textbf{PSPACE-complete} if it satisfies two conditions:
+\begin{enumerate}
+\item $B\in \PSPACE$.
+\item $\forall A \in \PSPACE$, $A \leq_\P B$.
+\end{enumerate}
+
+If $B$ merely satisfies condition 2, we say that it is \textbf{PSPACE-hard}.
+\end{shaded}
+
+\subsubsection{The TQBF Problem}
+
+It is convenient to require that all quantifiers appear at the beginning of the statement and that each quantifier’s scope is everything following it. Such statements are said to be in \textbf{prenex normal form}.
+
+When each variable of a formula appears within the scope of some quantifier, the formula is said to be fully \textbf{quantified}.
+
+\label{lang:TQBF_PSPACE}
+\label{lang:TQBF_PSPACEC}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.9}
+
+\medskip
+$TQBF$ is PSPACE-complete.
+\[
+TQBF = \{\desc{\phi}  \mid \text{$\phi$ is a true fully quantified Boolean formula}\}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+First we give a polynomial space algorithm deciding $TQBF$.
+
+\medskip
+$T$ = On input $\desc{\phi}$, where $\phi$ is a fully quantified Boolean formula:
+\begin{enumerate}
+\item If $\phi$ contains no quantifiers, then it is an expression with only constants, so evaluate $\phi$ and \textit{accept} if it is true; otherwise, \textit{reject}.
+\item If $\phi$ equals $\exists x \; \psi$, recursively call $T$ on $\psi$, first with 0 substituted for $x$ and then with 1 substituted for $x$. If either result is accept, then \textit{accept}; otherwise, \textit{reject}.
+\item If $\phi$ equals $\forall x \; \psi$, recursively call $T$ on $\psi$, first with 0 substituted for $x$ and then with 1 substituted for $x$. If both results are accept, then \textit{accept}; otherwise, \textit{reject}.”
+\end{enumerate}
+
+$T$ obviously decides $TQBF$. The depth of the recursion is at most the number of variables. At each level we need only store the value of one variable, so the total space used is $O(m)$, where $m$ is the number of variables that appear in $\phi$. Therefore, $T$ runs in linear space.
+
+\medskip
+Next, show that $TQBF$ is PSPACE-hard.
+
+\textbf{TODO}
+\end{proof}
+\end{mdframed}
+
+\subsubsection{Winning Strategies for Games}
+
+Let $\phi = \exists x_1 \; \forall x_2 \; \exists x_3 \cdots Q x_k [\psi]$ be a quantified Boolean formula in prenex normal form. $Q$ represents either a $\forall$ or an $\exists$ quantifier. Player A selects values for the variables that are bound to $\forall$ quantifiers, and Player E selects values for the variables that are bound to $\exists$ quantifiers. At the end of play, use the values that the players have selected for the variables and declare that Player E has won if $\psi$ is TURE, and Player A has won if $\psi$ is FALSE.
+
+A player has a \textbf{winning strategy} for a game if that player wins when both sides play optimally.
+
+\label{lang:FORMULAGAME_PSPACEC}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.11}
+
+\medskip
+$FORMULAGAME$ is PSPACE-complete.
+\begin{align*}
+FORMULAGAME = \{\desc{\phi} \mid & \text{Player E has a winning strategy in} \\
+&\text{the formula game associated with $\phi$} \}
+\end{align*}
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+$FORMULAGAME$ is the same as $TQBF$.
+\end{proof}
+\end{mdframed}
+
+\subsubsection{Generalized Geography}
+
+In \textbf{generalized geography}, we take an arbitrary directed graph with a designated start node.
+
+\label{lang:GG_PSPACE}
+\label{lang:GG_PSPACEC}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.14}
+
+\medskip
+$GG$ is PSPACE-complete.
+\begin{align*}
+GG = \{ \desc{G, b} \mid & \text{Player I has a winning strategy for the generalized } \\
+&\text{geography game played on graph $G$ starting at node $b$} \}
+\end{align*}
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+First we give an polynomial space algorithm that decides $GG$.
+
+$M$ = On input $\desc{G, b}$, where $G$ is a directed graph and $b$ is a node of $G$:
+\begin{enumerate}
+\item If $b$ has outdegree 0, \textit{reject} because Player I loses immediately.
+\item Remove node $b$ and all connected arrow a new graph $G'$.
+\item For each of the nodes $b_1, b_2, \ldots, b_k$ that $b$ originally pointed at, recursively call $M$ on $\desc{G', b_i}$.
+\item If all of these accept, Player II has a winning strategy in the original game, so \textit{reject}.
+\item If all of these accept, Player II has a winning strategy in the original game, \textit{reject}. otherwise, \textit{accept}.
+\end{enumerate}
+The only space required by this algorithm is for storing the recursion stack. Each level of the recursion adds a single node to the stack and at most $m \leq |G|$ levels occur. Hence the algorithm runs in linear space.
+
+\medskip
+To show that $GG$ is PSPACE-hard, show that $FORMULAGAME \leq_P GG$.
+
+\textbf{TODO}
+\end{proof}
+\end{mdframed}
+
+\subsection{The Classes L and NL}
+
+Introduce a new TM with two tapes: a read-only input tape and a read/write work tape. Only the cells scanned on the work tape contribute to the space complexity of this type of TM. 
+
+{\color{blue} For space bounds that are at least linear, the two-tape TM model is equivalent to the standard one-tape model. For sublinear space bounds, we use only the two-tape model.}
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.17}
+
+\medskip
+\textbf{L} is the class of languages that are decidable in logarithmic space on a DTM. 
+\[
+\L = \SPACE(\log n)
+\]
+
+\textbf{NL} is the class of languages that are decidable in logarithmic space on a NDTM. 
+\[
+\NL = \NSPACE(\log n)
+\]
+\end{shaded}
+
+Pointers into the input may be represented in logarithmic space. So one way to think about the power of log space algorithms is to consider the power of a fixed number of input pointers.
+
+$A = \{ 0^k 1^k \mid k \geq 0 \} \in \L$. Use a TM that decides $A$ by zig-zagging back and forth across the input, crossing off the 0s and 1s as they are matched. The log space TM for $A$ counts the number of 0s and the number of 1s in binary on the work tape. The only space required is that used to record the two counters.
+
+\medskip
+$PATH \in \P$.
+\label{lang:PATH_NL}
+\[
+PATH = \{
+\desc{G,s,t} \mid \text{$G$ is a directed graph that has a directed path from $s$ to $t$}
+\}
+\]
+\begin{shaded}
+$PATH \in \NL$.
+\end{shaded}
+\begin{mdframed}
+The nondeterministic log space TM deciding $PATH$ operates by starting at node $s$ and nondeterministically guessing the nodes of a path from $s$ to $t$. The machine records only the position of the current node at each step on the work tape. The machine nondeterministically selects the next node from among those pointed at by the current node. It repeats this action until it reaches node $t$ and \textit{accepts}, or until it has gone on for $m = |G|$ steps and \textit{rejects}.
+\end{mdframed}
+
+{\color{blue} Our earlier claim that any $f(n)$ space bounded TM also runs in time $2^{O(f(n))}$ is no longer true for very small space bounds.}
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.20}
+
+\medskip
+IF $M$ is a two-tape TM and $w$ is an input, a \textbf{configuration of $M$ on $w$} is a setting of the state, the work tape, and the positions of the two tape heads. The input $w$ is not a part of the configuration of $M$ on $w$.
+\end{shaded}
+
+If $M$ runs in $f(n)$ space and $w$ is an input of length $n$, the number of configurations of $M$ on $w$ is $n2^{O(f(n))}$. Say that $M$ has $c$ states and $g$ tape symbols. The number of strings that can appear on the work tape is  $g^{f(n)}$. The input head can be in one of $n$ positions, and the work tape head can be in one of $f(n)$ positions. Therefore, the total number of configurations of $M$ on $w$, which is an upper bound on the running time of $M$ on $w$, is $cnf(n)g^{f(n)}$.
+
+We can extend Savitch's theorem to hold for sublinear space bounds down to $f(n) \geq \log n$.
+
+\subsection{NL-Completeness}
+
+Analogous to the question of whether P = NP, we have the question of whether L = NL. The NL-complete languages are examples of languages that are  the most difficult languages in NL. If L and NL are different, all NL-complete languages don't belong to L.
+
+We define an NL-complete language to be one that is in NL and to which any other language in NL is reducible. We don't use polynomial time reducibility since all problems in NL are solvable in polynomial time. Every two problems in NL except $\emptyset$ and $\Sigma^*$ are polynomial time reducible to one another.
+
+\begin{shaded}
+\textbf{ITOC - Definition 8.21}
+
+\medskip
+A \textbf{log space transducer} is a TM with a read-only input tape, a write-only output tape, and a read/write work tape. The head on the output tape cannot move leftward, so it cannot read what it has written. The work tape may contain $O(\log n)$ symbols. A log space transducer $M$ computes a function $f:\Sigma^* \rightarrow \Sigma^*$, where $f(w)$ is the string remaining on the output tape after $M$ halts when it is started with $w$ on its input tape. We call $f$ a \textbf{log space computable function}. Language $A$ is \textbf{log space reducible} to language $B$, $A \leq_\L B$, if $A$ is mapping reducible to $B$ by means of a log space computable function $f$.
+\end{shaded}
+
+Any $f$ computed by a log space transducer can be computed in polynomial time.
+
+A transducer can never repeat a configuration otherwise it will not halt. There are only $2^{O(\log n)}  = O(n^k)$ configurations.
+
+\label{def:8.22}
+\begin{shaded}
+\textbf{ITOC - Definition 8.22}
+
+\medskip
+A language $B$ is \textbf{NL-complete} if
+\begin{enumerate}
+\item $B\in \NL$, and
+\item $\forall A \in \NL$, $A \leq_\L B$.
+\end{enumerate}
+\end{shaded}
+
+\label{theo:8.23}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.23}
+
+\medskip
+If $A \leq_\L B$ and $B \in \L$, then $A\in \L$.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+$M_A$ computes individual symbols of $f(w)$ as requested by $M_B$. In the simulation, $M_A$ keeps track of where $M_B$'s input head would be on $f(w)$. Every time $M_B$ moves, $M_A$ restarts the computation of $f$ on $w$ from the beginning and ignores all the output except for the desired location of $f(w)$. 
+\end{proof}
+\end{mdframed}
+
+\label{theo:8.25}
+\label{lang:PATH_NLC}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.25}
+
+\medskip
+$PATH$ is NL-complete.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that $PATH$ is NL-hard. Construct a graph that represents the computation of the nondeterministic log space TM for $A$. The reduction maps a string $w$ to a graph whose nodes correspond to the configurations of the NTM on input $w$.
+
+NTM $M$ decides $A$ in $O(\log n)$ space. Given an input $w$ construct $\desc{G, s, t}$ in log space, where $G$ is a directed graph that contains a path from $s$ to $t$ iff $M$ accepts $w$.
+
+The nodes of $G$ are the configurations of $M$ on $w$. For configurations $c_1$ and $c_2$ of $M$ on $w$, the pair $(c_1, c_2)$ is an edge of $G$ if $c_2$ is one of the possible next configurations of $M$ starting from $c_1$. Node $s$ is the start configuration of $M$ on $w$. $M$ is modified to have a unique accepting configuration, and we designate this configuration to be node $t$.
+
+This mapping reduces $A$ to $PATH$ because whenever $M$ accepts its input, some branch of its computation accepts, which corresponds to a path from the start configuration $s$ to the accepting configuration $t$ in $G$. Conversely, if some path exists from $s$ to $t$ in $G$, some computation branch accepts when $M$ runs on input $w$ and $M$ accepts $w$.
+
+We then give a log space transducer that outputs $\desc{G, s, t}$ on input $w$ by listing its nodes and edges. Each node is a configuration of $M$ on $w$ and can be represented in $c\log n$ space for some constant $c$. The transducer sequentially goes through all possible strings of length $c\log n$, tests whether each is a legal configuration of $M$ on $w$ and outputs those that pass the test. The transducer lists the edges similarly. Log space is sufficient for verifying that a configuration $c_1$ of $M$ on $w$ can yield configuration $c_2$ because the transducer only needs to examine the actual tape contents under the head locations given in $c_1$ to determine that $M'$ transition function would give configuration $c_2$ as a result. The transducer tries all pairs $(c_1, c_2)$ in turn to find which qualify as edges of $G$. Those that do are added to the output tape.
+\end{proof}
+\end{mdframed}
+
+Graph $G$ has one node for each possible configuration. $(c_1, c_2) \in E(G)$ if $M$ can go from $c_1$ to $c_2$ in a single step.
+
+Given an initial configuration $s$ and accept configuration $t$ (assume a unique accepting configuration), produce $\desc{G, s, t}$ using log space transducer. The log space transducer works as follows:
+\begin{enumerate}
+\item Running through counter and output valid configuration (as nodes of graph)
+\item Try $c_1, c_2$ and if $c_1$ yield $c_2$ according to TM's transition function, write $(c_1, c_2)$.
+\end{enumerate}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 8.26}
+
+\medskip
+$\NL \subseteq P$.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+\hyperref[theo:8.25]{Theorem 8.25} shows that any language in NL is log space reducible to $PATH$. Recall that a TM that uses space $f(n)$ runs in time $n2^{O(f(n))}$, so a reducer that runs in log space also runs in polynomial time. Therefore, any language in NL is polynomial time reducible to $PATH$, which in turn is in $P$, by \hyperref[theo:7.14]{Theorem 7.14}. We know that every language that is polynomial time reducible to a language in P is also in P, so the proof is complete.
+\end{proof}
+\end{mdframed}
+
+\subsection{NL Equals coNL}
+
+The classes NP and coNP are generally believed to be different.
+
+A language $A \in \coNL$ if $\overline{A} \in \NL$.
+
+A language $B \in \NL$, if there's an NDTM $M$ in log space, such that given $w \in B$, some path of $M$ accepts.
+
+A language $B \in \coNL$, if $w \in B$ all branch accepts, $w \not \in B$ some paths reject.
+
+$ \overline{PATH} = \{ \desc{G, s, t} \mid \text{no path from $s$ to $t$}\}$.
+
+\label{theo:8.27}
+\begin{shaded}
+\textbf{ITOC - Theorem 8.27}
+
+\medskip
+NL = coNL.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that $\overline{PATH} \in \NL$ and establish that every problem in coNL is also in NL, because $PATH$ is NLC. If $\overline{PATH} \in \NL$, then $PATH \in \coNL$ and since $PATH$ is NLC, then $\coNL \subseteq \NL$. The NL algorithm $M$ for $\overline{PATH}$ must have an accepting computation whenever the input graph $G$ does not contain a path from $s$ to $t$.
+
+\medskip
+Let $c$ be the number of nodes in $G$ that are reachable from $s$. Assume that $c$ is given and show how to use $c$ to solve $\overline{PATH}$. 
+
+Given $G, s, t$ and $c$, the machine $M$ operates as follows. One by one, $M$ goes though all the $m$ nodes of $G$ and nondeterministically guesses whether each one is reachable from $s$. Whenever a node $u$ is guessed to be reachable, $M$ attempts to verify this guess by guessing a path of length $m$ or less from $s$ to $u$. If a computation branch fails to verify this guess, it rejects. In addition, if a branch guesses that $t$ is reachable, it rejects.$M$ counts the number of nodes that have been verified to be reachable. When a branch has gone through all of $G$'s nodes, it checks that the number of nodes that it verified to be reachable from $s$ equals $c$, rejects if not.
+
+$M$ nondeterministically selects exactly $c$ nodes reachable from $s$, not including $t$, and proves that each is reachable from $s$ by guessing the path, $M$ knows that the remaining nodes, including $t$, are not reachable, so it can accept.
+
+\medskip
+Next, describe a ND log space procedure whereby at least one computation branch has the correct value for $c$ and all other branches reject.
+
+Define $A_i$ for $i = 0, \ldots, m$ to be the collection of nodes that are at a distance of $i$ or less from $s$. So $A_0 = \{s\}$, each $A_i \subseteq A_{i+1}$ and $A_m$ contains all nodes that are reachable from $s$. Lt $c_i$ be the number of nodes in $A_i$. Then calculate $c_{i+1}$ from $c_i$. 
+
+The algorithm goes through all the nodes of $G$, determines whether each is a member of $A_{i+1}$ and counts the members.
+
+To determine whether a node $v$ is in $A_{i+1}$, use an inner loop to go through all the nodes of $G$ and guess whether each node is in $A_i$. Each positive guess is verified by guessing the path of length at most $i$ from $s$. For each node $u$ verified to be in $A_i$, the algorithm tests whether $(u, v)$ is an edge of $G$. If it is an edge, $v$ is in $A_{i+1}$. The number of nodes verified to be in $A_i$ is counted. At the completion of the inner loop, if the total number of nodes verified to be in $A_i$ is not $c_i$, all $A_i$ have not been found, so this branch rejects. If the count equals $c_i$ and $v$ has not yet been shown to be in $A_{i+1}$, then $v \not \in A_{i+1}$. Then go on to the next $v$ in the outer loop.
+
+\medskip
+\textbf{NL = coNL}
+
+$\overline{PATH} \in \NL$, therefore $PATH \in \coNL$.
+
+$\forall A \in \NL$, since $PATH$ is NL-complete, $A \leq_\L PATH$, and $\overline{A} \leq_\L \overline{PATH}$. But since $\overline{PATH} \in \NL$, $\overline{A} \in \NL$, and $A \in \coNL$. Thus $\forall A \in \NL$, $A \in \coNL$, and consequently $\NL \subseteq \coNL$.
+
+$\forall A \in \coNL$, $\overline{A} \in \NL$, thus $\overline{A} \leq_\L PATH$, and $A \leq_\L \overline{PATH}$. But $\overline{PATH} \in \NL$. Thus, $\forall A \in \coNL$, $A \in \NL$, and consequently $\coNL \subseteq \NL$.
+
+Together $\NL = \coNL$.
+\end{proof}
+\end{mdframed}

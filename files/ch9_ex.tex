@@ -1,0 +1,83 @@
+\subsection{Exercises}
+
+\textbf{9.1} Prove that $\TIME(2^n) = \TIME(2^{n+1})$.
+\begin{mdframed}
+\begin{proof}
+$\TIME(t(n))$ is the collection of languages that are decidable by $O(t(n))$ TM. Since $O(2^{n+1}) = O(2^n)$, $\TIME(2^n) = \TIME(2^{n+1})$.
+\end{proof}
+\end{mdframed}
+
+\textbf{9.2} Prove that $\TIME(2^n) \subset \TIME(2^{2n})$.
+\begin{mdframed}
+\begin{proof}
+$\TIME(2^n) \subseteq \TIME(2^{2n})$ because $2^n \leq 2^{2n}$.
+
+The function $2^{2n}$ is time constructible because a TM can write the number 1 followed by 2n 0s in $O(2^{2n})$ time.
+
+$t_1(n) = 2^n, t_2(n) = 2^{2n}$, want to show that $t_1(n) = o(t_2(n) / \log t_2(n))$.
+\begin{align*}
+\lim_{n\rightarrow \infty} \frac{t_1(n)}{t_2(n) / \log t_2(n)} = &
+\lim_{n\rightarrow \infty} \frac{2^n}{2^{2n} / \log 2^{2n}} \\
+= & \lim_{n\rightarrow \infty} \frac{2^n \log_2 2^{2n}}{2^{2n}} = 0
+\end{align*}
+So $t_1(n) = o(t_2(n) / \log t_2(n))$ and thus $\TIME(2^n) \subset \TIME(2^{2n})$.
+\end{proof}
+\end{mdframed}
+
+\textbf{9.3} Prove that $\NTIME(n) \subset \PSPACE$.
+\begin{mdframed}
+\begin{proof}
+$\NTIME(n) \subset \NSPACE(n)$ because any TM that operates in time $t(n)$ on every computation branch can use at most $t(n)$ tape cells on every branch. Furthermore, $\NSPACE(n) \subseteq \SPACE(n^2)$ due to Savitch's theorem. However, $\SPACE(n^2) \subset \SPACE(n^3)$ because of the space hierarchy theorem. And $\SPACE(n^3) \subseteq \PSPACE$. Thus $\NTIME(N) \subset \PSPACE$.
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+\textbf{9.12} Describe the error in the following fallacious "proof" that $\P \neq \NP$. Assume that P = NP and obtain a contradiction. If P = NP, then $SAT \in \P$ and so for some $k$, $SAT \in \TIME(n^k)$. Because every language in NP is polynomial time reducible to $SAT$, we have $\NP \subseteq \TIME(n^k)$. Therefore, $\P \subseteq \TIME(n^k)$. But by the time hierarchy theorem, $\TIME(n^{k+1})$ contains a language that isn't int $\TIME(n^k)$, which contradicts $\P \subseteq \TIME(n^k)$. Therefore, $\P \neq \NP$.
+\begin{mdframed}
+\begin{proof}
+In the step where every language in NP is polynomial time reducible to $SAT$, the time of the reduction is not taken into account.
+\end{proof}
+\end{mdframed}
+
+\textbf{9.13} Consider the function $pad: \Sigma^* \times \mathbb{N} \rightarrow \Sigma^*\#^*$ that is defined as follows. Let $pad(s, l) = s\#^j$, where $j = \max(0, l-m)$ and $m$ is the length of $s$. Thus $pad(s, l)$ simply adds enough copies of the new symbol $\#$ to the end of $s$ so that the length of the result is at least $l$. For any language $A$ and function $f: \mathbb{N} \rightarrow \mathbb{N}$, define the elanguage $pad(A, f)$ as 
+\[
+pad(A, f) = \{pad(s, f(m)) \mid \text{where $s \in A$ and $m$ is the length of $s$} \}
+\]
+prove that if $A \in \TIME(n^6)$, then $pad(A, n^2) \in \TIME(n^3)$.
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ decides $A$ in $O(n^6)$ time. We build a TM $M'$ that decides $pad(A, n^2)$ in $O(n^3)$ time.
+
+\medskip
+$M'$ = On input $w$, where $|w| = n$
+\begin{enumerate}
+\item Check if $w$ is of the form $pad(s, |s|^2)$, where $s$ is some string. If not, reject.
+\item Run $M$ on $s$, and output whatever $M$ outputs.
+\end{enumerate}
+
+Step 1 will take one pass of the input so it will take $O(n)$ time.
+
+Step 2 will take $O(|s|^6)$ time, but since $|s|^2 = n$, this takes $O(n^3)$ times.
+
+Thus the total running time is $O(n^3)$ and thus $pad(A, f) \in \TIME(n^3)$.
+\end{proof}
+\end{mdframed}
+
+\textbf{9.14} Prove that if NEXPTIME $\neq$ EXPTIME, then $\P \neq NP$. You may find the function $pad$, defined in Problem 9.13, to be helpful.
+\begin{mdframed}
+\begin{proof}
+We prove the contrapositive, if P = NP, then NEXPTIME = EXPTIME.
+
+Let $A \in$ NEXPTIME, then there is some positive integer $c$, such that $A \in \NTIME(2^{n^c})$. And also $pad(A, 2^{n^c}) \in \NP$. since $\P = \NP$, $pad(A, 2^{n^c}) \in \P$. So $A \in \TIME(2^{n^c}) \subseteq \EXPTIME$. Thus EXPTIME = NEXPTIME.
+\end{proof}
+\end{mdframed}
+
+\textbf{9.16} Prove that $TQBF \not \in \SPACE(n^{1/3})$.
+\begin{mdframed}
+\begin{proof}
+We prove this by contradiction. Assume $TQBF \in \SPACE(n^{1/3})$. According to space hierarchy theorem, there is some language $A$, where $A \not \in \SPACE(n)$, but $A \in \SPACE(n^{1+\epsilon})$ where $\epsilon > 0$.
+
+Since $TQBF$ is PSPACE-complete, by definition, any language in PSPACE reduces to $TQBF$ in poly time or in log space. Obviously $A$ is such a language and $A \leq_\P TQBF$ or $A \leq_\L TQBF$. Let the output of this reduction on $A$ take $n^k$ space. Since $TQBF \in \SPACE(n^{1/3})$, we have $A \in \SPACE(n^{k/3})$. If $k = 3$, then $A \in \SPACE(n)$, a contradiction. Thus $TQBF \not \in \SPACE(n^{1/3})$. 
+\end{proof}
+\end{mdframed}

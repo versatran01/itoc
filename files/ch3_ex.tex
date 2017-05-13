@@ -1,0 +1,280 @@
+\subsection{Exercises}
+
+\subsection{Problems}
+\textbf{3.10} Say that a \textbf{write-once Turing machine} is a single-tape TM that can alter each tape square at most once (including the input portion of the tape). Show that this variant Turing machine model is equivalent to the ordinary Turing machine model. (Hint: As a first step, consider the case whereby the Turing machine may alter each tape square at most twice. Use lots of tape.)
+\begin{mdframed}
+\begin{proof}
+First simulate an ordinary TM by a write-twice TM. The write-twice TM simulates a single step of the original TM by copying the entire tape over to a fresh portion of the tape to the right-hand side of the currently used portion. The copying procedure operates character by character, marking a character as it is copied.
+
+This procedure alters each tape square twice: once to write the character for the first time, and again to mark that it has been copied. The position of the original TM's tape head is marked on the tape. When copying the cells at or adjacent to the marked position, the tape content is updated according to the rules of the original TM.
+
+\medskip
+To carry out the simulation with a write-once TM, operate as before, except that each cell of the original TM's tape is now represented by two cells. The first contains the original TM's tape symbol and the second is for the mark used in the copying procedure. The input is not presented to the TM in the format with two cells per symbol, so the very first time the tape is copied , the copying marks are put directly over the input symbols.
+\end{proof}
+\end{mdframed}
+
+\textbf{3.11}  A \textbf{Turing machine with doubly infinite tape} is similar to an ordinary Turing machine, but its tape is infinite to the left as well as to the right. The tape is initially filled with blanks except for the portion that contains the input. Computation is defined as usual except that the head never encounters an end to the tape as it moves leftward. Show that this type of Turing machine recognizes the class of Turing-recognizable languages.
+
+\begin{mdframed}
+\begin{proof}
+A TM with doubly infinite tape can easily simulate an ordinary TM. It needs to mark the left-hand end of the input so that it can prevent the head from moving off that end.
+
+\medskip
+To simulate the double infinite tape TM by an ordinary TM, we show how to simulate it with a 2-tape TM, which in turn can be simulated by an ordinary TM. 
+
+The first tape of the 2-tape TM is written with the input string and the second tape is blank. We cut the tape of the doubly infinite tape TM into two parts, at the starting cell of the input string. The portion with the input string and all the blank spaces to its right appears on the first tape of the 2-tape TM. The portion to the left of the input string appears on the second tape, in reverse order.
+\end{proof}
+\end{mdframed}
+
+\textbf{3.12} A \textbf{Turing machine with left reset} is similar to an ordinary TM, but the transition function has the form
+\[
+\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{\text{R},\text{RESET} \}
+\]
+If $\delta(q,a) = (r, b, \text{RESET})$, when the machine is in state $q$ reading an $a$, the machine’s head jumps to the left-hand end of the tape after it writes b on the tape and enters state $r$. Note that these machines do not have the usual ability to move the head one symbol left. Show that Turing machines with left reset recognize the class of Turing-recognizable languages.
+
+\begin{mdframed}
+\begin{proof}
+\textbf{Textbook solution}
+
+We simulate an ordinary TM with the left-reset TM. When the ordinary TM moves its head right, the reset TM does the same. When the ordinary TM moves its head left, the reset TM cannot, so it gets the same effect by marking the current head location on the tape, then resetting and copying the entire tape one cell to the right, except for the mark, which is kept on the same tape cell. Then it resets again, and scans right until it find the mark.
+
+\textbf{Homework solution}
+
+This proof has two directions.
+
+\medskip
+We first show that regular Turing machines can simulate Turing machine with left reset.
+
+We will replace the state transition function in left-reset Turning machines which is of the form 
+$\delta(q, a) = (r, b, \text{RESET})$ to a series of state transition functions in regular Turning machines which simulate the same move.
+
+To achieve this, we use the technique in example 3.7 from the book, which "marks the leftmost symbol in some way when the machine starts with its head on that symbol. Then the machine may scan
+left until it finds the mark when it wants to reset its head to the left-hand end".
+
+\medskip
+We then show that Turing machine with left reset can simulate regular Turing machine.
+
+For a move to the right on the regular TM, the left-reset TM will do the same.
+
+For a move to the left on the regular TM, the left-reset TM simulates that with the following algorithm:
+
+Assume the head is currently at some cell on the tape,
+\begin{enumerate}
+\item Mark the current cell and left reset.
+\item Check the current cell (which is the leftmost cell after the previous left reset)
+\item If it is marked, then we are already at the left end of the tape. Unmark the cell and do a left reset and we are done.
+\item If it is not marked, then the machine starts to copy each cell to its right (we will write a $\sqcup$ in the first cell). When it reaches the marked cell containing symbol $\dot{x}$, it writes down a marked version of the previous cell $\dot{y}$ and at the next step, it writes down the unmarked version $x$. 
+\item It then keeps copying until the entire input tape is shifted to the right by one cell. 
+\item Do a left reset to go back to the left end side of the tape, then keep going right to find the marked cell. Now the marked cell is one cell left to the previous head position.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{3.13} A \textbf{Turing machine with stay put instead of left} is similar to an ordinary TM, but the transition function has the form
+\[
+\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{ R, S\}
+\]
+At each point, the machine can move its head right or let it stay in the same position. Show that this Turing machine variant is not equivalent to the usual version. What class of languages do these machines recognize?
+
+\begin{mdframed}
+\begin{proof}
+It is easy to see that we can simulate any DFA with a stay-put TM. The only modification is to add transitions from state in $F$ to $q_\accept$ and from states not in $F$ to $q_\reject$ upon reading a blank.
+
+\textbf{TODO}
+\end{proof}
+\end{mdframed}
+
+\label{exe:DCDB_CLOSURE}
+\textbf{3.15} Show that the collection of decidable languages is closed under the operation of 
+
+\textbf{a.} union
+\begin{mdframed}
+\begin{proof}
+Let $M_1$ decides $L_1$ and $M_2$ decides $L_2$. We construct a TM $M'$ that decides the union of $L_1$ and $L_2$:
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M_1$ on $w$. If it accepts, \textit{accept}.
+\item Run $M_2$ on $w$. If it accepts, \textit{accept}. Otherwise, \textit{reject}.
+\end{enumerate}
+$M'$ accepts $w$ if either $M_1$ or $M_2$ accept it. If both reject, $M'$ rejects.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} concatenation
+
+\begin{mdframed}
+\begin{proof}
+Let $M_1$ decides $L_1$ and $M_2$ decides $L_2$. We construct a TM $M'$ that decides the concatenation of $L_1$ and $L_2$:
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Nondeterministically split $w$ into strings $x$ and $y$.
+\item Run $M_1$ on $x$ and $M_2$ on $y$.
+\item If both accept, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+If there is an accepting computation path, then we have found a successful split and the string is in $L_1L_2$. If all computation paths reject, then the string is not in $L_1L_2$. In either case, $M'$ halts. Thus $M'$ decides $L_1 L_2$.
+\end{proof}
+\end{mdframed}
+
+\textbf{c.} star
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ decides $L$. Construct a TM $M'$ that decides $L^*$.
+
+$M$ = On input $w$:
+\begin{enumerate}
+\item Split $w$ into $w_1 w_2 \cdots w_n$ for every possible way
+\item $\quad$ Run $M$ on $w_i$ for $i = 1, \ldots, n$. (Since $M$ is a decider, it will always halt).
+\item $\quad$ If $M$ accepts each of the strings $w_i$, \textit{accept}
+\item All possible splits tried, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{e.} complementation
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ decides $L$. Construct a TM $M'$ that decides $\overline{L}$.
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M$ on $w$.
+\item Output the opposite of whatever $M$ outputs.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{f.} intersection 
+\begin{mdframed}
+\begin{proof}
+Let $M_1$ decide $L_1$ and $M_2$ decides $L_2$. Construct a TM $M'$ that decides $L_1 \cap L_2$.
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M_1$ on $w$.
+\item If $M_1$ rejects, \textit{reject}.
+\item Run $M_2$ on $w$.
+\item If $M_2$ rejects, \textit{reject}; Otherwise, \textit{accept}
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{exe:TR_CLOSURE}
+\textbf{3.16} Show that the collection of Turing-recognizable languages is closed under the operation of 
+
+\textbf{a.} union
+\begin{mdframed}
+\begin{proof}
+For any two Turing-recognizable languages $L_1$ and $L_2$, let $M_1$ and $M_2$ be the TMs that recognize them. We construct a TM $M'$ that recognizes the union of $L_1$ and $L_2$:
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M_1$ and $M_2$ alternately on $w$ step by step.
+\item If either accepts, \textit{accept}. If both halt and reject, \textit{reject}.
+\end{enumerate}
+If either $M_1$ or $M_2$ accepts $w$, $M'$ accepts $w$ because the accepting TM arrives to its accepting state after a finite number of steps. Note that if both TMs reject and either of them does so by looping, then $M'$ will loop.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} concatenation
+
+\begin{mdframed}
+\begin{proof}
+Let $M_1$ recognize $L_1$ and $M_2$ recognize $L_2$, construct an NDTM $M'$ that recognize $L_1L_2$.
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Non-deterministically split $w$ into $x$ and $y$.
+\item Run $M_1$ on $x$. If it halts and rejects, \textit{reject}.
+\item Run $M_2$ on $y$. If it accepts, \textit{accept}. If it halts and rejects, \textit{reject}.
+\end{enumerate}
+
+$M'$ will accept strings in $L_1L_2$ because it will guess the correct split and both $M_1$ and $M_2$ will accept.
+\end{proof}
+\end{mdframed}
+
+\textbf{c.} star
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ recognize $L$. Construct an NDTM that recognizes $L^*$
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Nondeterministically split $w$ into $w_1 w_2 \cdots w_n$.
+\item Run $M$ on $w_i$ for all $i$. If $M$ accepts all of them, \textit{accept}. If $M$ halts and rejects for any $i$, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{d.} intersection
+\begin{mdframed}
+\begin{proof}
+Let $M_1$ and $M_2$ recognize $L_1$ and $L_2$. Construct a TM $M'$ that recognizes $L_1 \cap L_2$.
+
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M_1$ on $w$. If it halts and rejects, \textit{reject}. If it accepts, go to step 2.
+\item Run $M_2$ on $w$. If it halts and rejects, \textit{reject}. If it accepts, \textit{accept}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{3.17}  Let $B = \{\desc{M_1}, \desc{M_2}, \ldots \}$ be a Turing-recognizable language consisting of TM descriptions. Show that there is a decidable language $C$ consisting of TM descriptions such that every machine described in B has an equivalent machine in $C$ and vice versa.
+\begin{mdframed}
+\begin{proof}
+$B$ is Turing-recognizable, then there is a enumerator $E$ that enumerates strings in $B$. We build an enumerator $E'$ that enumerates the equivalent of $M_i$ in $C$ in string order. 
+
+\medskip
+$E$ = Ignore input
+\begin{enumerate}
+\item Run $E$.
+\item When $E$ gives the $i$th TM $\desc{M_i}$, add extra useless state to $M_i$ such that the resulting TM description $\desc{M_i'}$ is longer than $\desc{M_i}$.
+\item Output $\desc{M_i'}$.
+\end{enumerate}
+
+Since this enumerator $E'$ enumerates strings in string order, it is decidable.
+\end{proof}
+\end{mdframed}
+
+\textbf{3.18} Show that a language is decidable iff some enumerator enumerates the language in the standard string order.
+\begin{mdframed}
+\begin{proof}
+If $A$ is decidable, the enumerator operates by generating the strings in string order and testing each in turn for membership in $A$ using the decider. Strings which are found to be in $A$ are printed.
+
+\medskip
+If $A$ is enumerable in string order, consider two cases. If $A$ is finite, it is decidable because all finite languages are decidable. If $A$ is infinite, a decider for $A$ operates as follows. On receiving input $w$, the decider enumerates all strings in $A$ in order until some string after $w$ appears. That must occur eventually because $A$ is infinite. If $w$ has appeared in the enumeration already then \textit{accept}, but if it hasn't appeared yet, it never will, so \textit{reject}. 
+\end{proof}
+\end{mdframed}
+
+\textbf{3.19} Show that every infinite Turing-recognizable language has an infinite decidable subset.
+\begin{mdframed}
+\begin{proof}
+Let $L$ be an infinite Turing-recognizable language, from theorem 3.21 we know that if $L$ is Turing-recognizable, then some enumerator $E$ enumerates $L$. We then construct another enumerator $E'$ that enumerates a subset of $L$ (called $L'$) in lexicographical order. We proved above that if an enumerator that enumerates a language in lexicographical order, then that language is decidable. Therefore, the construction of $E'$ shows that $L$ has in infinite decidable subset $L'$.
+
+\medskip
+$E'$ = Ignore input
+\begin{enumerate}
+\item Run $E$ once. Print and record the first string.
+\item Keep running $E$. For every string $w$ that $E$ prints, compare it with the previously recorded string.
+\begin{enumerate}
+\item If $w$ is longer than the previous recorded string, print and record $w$.
+\item Otherwise don't print $w$.
+\end{enumerate}
+\end{enumerate}
+
+Again to see why this machine is correct, note that $E'$ internally uses $E$, so it will print a subset of the language of $E$ which is $L$. And because $L$ is infinite, $E$ will eventually print some string that is longer than the previously recorded string in $E'$. Therefore, $L'$ is an infinite decidable subset of $L$.
+\end{proof}
+\end{mdframed}
+
+\textbf{3.20} Show that single-tape TMs that cannot write on the portion of the tape containing the input string recognize only regular languages.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}

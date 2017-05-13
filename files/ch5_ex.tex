@@ -1,0 +1,359 @@
+\subsection{Exercises}
+
+\textbf{5.4} If $A \leq_m B$ and $B$ is a regular language, does that imply that $A$ is a regular language?
+\begin{mdframed}
+No. If $A \leq_m B$ and $B$ is regular, it does not necessarily imply that $A$ is also regular. Because the reduction function can be more than the power of a DFA. Reduction functions are required only to halt on all inputs but can perform very sophisticated computations.
+
+For example, let $A = \{0^n 1^n \mid n \leq 0\}$, which is not regular. Reduce $A$ to $B = \{11\}$ using function $f$ computed by the TM $M$. $B$ has only one string, so $B$ is regular.
+
+$M$ outputs $11$ if it accepts $w$ and outputs $00$ if it rejects. So $f$ maps instances of $A$ to the only instance of $B$ and maps instances of $\overline{A}$ to $00 \in \overline{B}$. So $B$ is regular, while $A$ is not.
+\end{mdframed}
+
+\textbf{5.5} Show that $A_\TM$ is not mapping reducible to $E_\TM$.
+
+\begin{mdframed}
+\begin{proof}
+Supposer for a contradiction that $A_\TM \leq_m E_\TM$ via reduction function $f$. Then by definition of reduction, $\overline{A_\TM} \leq_m \overline{E_\TM}$ via the same reduction function $f$. But $\overline{E_\TM}$ is Turing-recognizable, so $\overline{A_\TM}$ is also Turing-recognizable. But $\overline{A_\TM}$ is not, a contradiction.
+\end{proof}
+\end{mdframed}
+
+\textbf{5.6} Show that $\leq_m$ is a transitive relation.
+
+\begin{mdframed}
+\begin{proof}
+Supposer $A \leq_m B$ and $B\leq_m C$. Then there are computable functions $f$ and $g$ such that $x\in A \Leftrightarrow f(x) \in B$ and $y\in B \Leftrightarrow g(y) \in C$. Consider the composition $h(x) = g(f(x))$. We build a TM that computes $h$ as follows: First, simulate a TM for f on input $x$ and call the output $y$. Then simulate a TM for $g$ on $y$. The output is $h(x) = g(f(x))$. Therefore, $h$ is a computable function and $x\in A \Leftrightarrow h(x) \in C$. Hence $A\leq_m C$ via the reduction function $h$.
+\end{proof}
+\end{mdframed}
+
+\textbf{5.7} Show that if $A$ is Turing-recognizable and $A \leq_m \overline{A}$, then $A$ is decidable.
+
+\begin{mdframed}
+\begin{proof}
+Suppose that $A \leq_m \overline{A}$. Then $\overline{A} \leq_m A$ via the same mapping reduction. Since $A$ is Turing-recognizable, $\overline{A}$ is also Turing-recognizable, then $A$ is decidable.
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\label{lang:WWRTM_UDCDB}
+\textbf{5.9} Let
+\[
+WWR_\TM = T = \{\desc{M} \mid \text{$M$ is a TM that accepts $w^R$ whenever it accepts $w$}\}
+\]
+Show that $T$ is undecidable.
+
+\begin{mdframed}
+\begin{proof}
+Assume TM $R$ decides $T$. Construct a TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, where $M$ is a TM:
+\begin{enumerate}
+\item Construct a TM $Q$ as follows:
+
+$Q$ = On input $x$:
+\begin{enumerate}
+\item If $x$ does not have the form 01 or 10, \textit{reject}.
+\item If $x$ has the form 01, \textit{accept}
+\item Else if $x$ has the form 10, run $M$ on $w$ and accept if $M$ accepts $w$.
+\end{enumerate}
+\item Run $R$ on $\desc{Q}$.
+\item Output whatever $R$ outputs.
+\end{enumerate}
+
+We see that if $Q$ accepts both 01 and 10, then $M$ accepts $w$. Contradiction.
+\end{proof}
+\end{mdframed}
+
+\textbf{5.10} Consider the problem of determining whether a two-tape Turing machine ever writes a nonblank symbol on its second tape when it is run on input $w$. Formulate
+this problem as a language and show that it is undecidable.
+\begin{mdframed}
+\begin{proof}
+Let
+\begin{align*}
+B = \{ \desc{M, w} \mid \  & \text{$M$ is a two-tape TM that writes} \\
+& \text{a nonblank symbol on its second tape when it is run on $w$} \}
+\end{align*}
+
+Show that $A_\TM$ reduces to $B$. Assume for the sake of contradiction that TM $R$ decides $B$. Then construct a TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, where $M$ is a TM and $w$ a string:
+\begin{enumerate}
+\item Use $M$ to construct the following two-tape TM $T$
+
+$T$ = On input $x$:
+\begin{enumerate}
+\item Simulate $M$ on $x$ using the first tape.
+\item If the simulation shows that $M$ accept, write a nonblank symbol on the second tape.
+\end{enumerate}
+\item Run $R$ on $\desc{T, w}$ to determine whether $T$ on input $w$ writes a nonblank symbol on its second tape.
+\item If $R$ accepts, $M$ accepts $w$, \textit{accept}. Otherwise ,\textit{reject}
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{5.11} Consider the problem of determining whether a two-tape Turing machine ever writes a nonblank symbol on its second tape during the course of its computation on any input string. Formulate this problem as a language and show that it is undecidable.
+
+\begin{mdframed}
+\begin{proof}
+Let 
+\begin{align*}
+C = \{ \desc{M} \mid &\text{$M$ is a two-tape TM that writes a nonblank} \\
+& \text{symbol on its second tape when its is run on some input}\}
+\end{align*}
+
+Show that $A_\TM$ reduces to $C$. Assume for the sake of contradiction that TM $R$ decides $C$. Construct a TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, where $M$ is a TM and $w$ is a string:
+\begin{enumerate}
+\item Use $M$ and $w$ to construct the following two-tape TM $T_w$.
+
+$T_w$ = On an input:
+\begin{enumerate}
+\item Simulate $M$ on $w$ using the first tape.
+\item If the simulation shows that $M$ accepts, write a nonblank symbol on the second tape.
+\end{enumerate}
+\item Run $R$ on $\desc{T_w}$ to determine whether $T_w$ ever writes a nonblank symbol on its second tape.
+\item If $R$ accepts, $M$ accepts $w$, so \textit{accept}. Otherwise, \textit{reject}
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{5.12} Consider the problem of determining whether a single-tape Turing machine ever writes a blank symbol over a nonblank symbol during the course of its computation on any input string. Formulate this problem as a language and show that it is undecidable.
+
+\begin{mdframed}
+\begin{proof}
+Let 
+\begin{align*}
+E = \{ \desc{M} \mid &\text{$M$ is a single-tape TM that writes a blank} \\
+& \text{symbol over a non-blank symbol on some input}\}
+\end{align*}
+
+Show that $A_\TM$ reduces to $E$. Assume for the sake of contradiction that TM $R$ decides $E$. Construct a TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, where $M$ is a TM and $w$ is a string:
+\begin{enumerate}
+\item Use $M$ and $w$ to construct the following single-tape TM $T_w$
+
+$T_w$ = On any input:
+\begin{enumerate}
+\item Simulate $M$ on $w$. Use symbol $\sqcup'$ instead of $\sqcup$ when writing and treat it like $\sqcup$ when reading.
+\item If $M$ accepts $w$, write a true blank symbol $\sqcup$ over some nonblank symbol.
+\end{enumerate}
+
+\item Run $R$ on $\desc{T_w}$ to determine whether $T_w$ ever writes a blank.
+\item If $R$ accepts, $M$ accepts $w$, \textit{accept}; Otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:USELESSTM_UDCDB}
+\textbf{5.13} A useless state in a Turing machine is one that is never entered on any input string. Consider the problem of determining whether a Turing machine has any useless states. Formulate this problem as a language and show that it is undecidable.
+
+\begin{mdframed}
+\begin{proof}
+Let 
+\[
+USELESS_\TM = \{ \desc{M, q} \mid \text{$M$ is a TM with useless state $q$} \}
+\]
+
+We show that $E_\TM$ reduces to $USELESS_\TM$. Assume for the sake of contradiction that TM $R$ decides $USELESS_\TM$. Construct TM $S$ that uses $R$ to decide $E_\TM$. For any TM $M$ with accept state $q_\accept$, $q_\accept$ is useless iff $L(M) = \emptyset$.
+
+\medskip
+$S$ = On input $\desc{M}$, where $M$ is a TM:
+\begin{enumerate}
+\item Run $R$ on $\desc{M, q_\accept}$ to determine whether $M$ has useless state $q_\accept$.
+\item If $R$ accept, \textit{accept}; if $R$ reject, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{5.14} Consider the problem of determining whether a Turing machine $M$ on an input $w$ ever attempts to move its head left when its head is on the leftmost tape cell. Formulate this problem as a language and show that it is undecidable.
+
+\begin{mdframed}
+\begin{proof}
+Let 
+\begin{align*}
+L = \{\desc{M, w} \mid & \text{$M$ attempts to move its head left when } \\
+&\text{its head is on the leftmost tape cell}\}
+\end{align*}
+
+Show that $A_\TM$ reduces to $L$. Assume for the sake of contradiction that TM $R$ decides $L$. Construct a TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$:
+\begin{enumerate}
+\item Convert $M$ to $M'$
+
+$M'$  = On input $x$:
+\begin{enumerate}
+\item $M'$ first moves it's input over one cell to the right, and writes a new symbol $\sqcup'$ on the leftmost tape cell. 
+\item Simulates $M$ on the input.
+\item If during the computation, the head sees $\sqcup'$, then move its head one square to the right and remains in the same state.
+\item If $M$ accepts, move it's head all the way to the left and then moves left off the leftmost tape cell.
+\end{enumerate}
+\item Run $R$ on $\desc{M', w}$.
+\item If $R$ accepts, \textit{accept}. If $R$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{5.15} Consider the problem of determining whether a Turing machine $M$ on an input $w$ ever attempts to move its head left at any point during its computation on $w$. Formulate this problem as a language and show that it is decidable.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{5.22} Show that $A$ is Turing-recognizable iff $A \leq_m A_\TM$.
+\begin{mdframed}
+\begin{proof}
+Assume $A \leq_m A_\TM$, then since $A_\TM$ is Turing-recognizable, then $A$ is Turing-recognizable.
+
+Assume $A$ is Turing-recognizable, then there exists a TM $N$ that recognizes $A$.
+
+$A = \{w \mid \text{$N$ accepts $w$} \}$. Let $f$ be the reduction function such that $f(w) = \desc{N, w}$. 
+
+It is easy to see that $w \in A$ iff $f(w) = \desc{N, w} \in A_\TM$. Therefore, $A \leq_m A_\TM$.
+\end{proof}
+\end{mdframed}
+
+\textbf{5.23} Show that $A$ is decidable iff $A \leq_m 0^*1^*$.
+\begin{mdframed}
+\begin{proof}
+Assume $A \leq_m 0^*1^*$, then since $0^*1^*$ is regular hence decidable, $A$ is decidable.
+
+Assume $A$ is decidable, then there exists some TM $R$ that decides $A$. We construct a TM $Q$ computes the reduction function $f$.
+
+\medskip
+$Q$  = On input $w$:
+\begin{enumerate}
+\item Run $R$ on $w$.
+\item If $R$ accepts, outputs 01; Otherwise, outputs 10.
+\end{enumerate}
+
+It is easy to see that $w \in A \Leftrightarrow f(w) \in 0^* 1^*$. Thus $A \leq_m 0^*1^*$.
+\end{proof}
+\end{mdframed}
+
+\textbf{5.24} Let 
+\begin{align*}
+J = \{ w \mid & \text{either $w = 0x$ for some $x \in A_\TM$} \\ 
+& \text{or $w=1y$ for some $y\in\overline{A_\TM}$} \}
+\end{align*}
+
+Show that neither $J$ nor $\overline{J}$ is Turing-recognizable.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{5.25} Give an example of an undecidable language $B$, where $B \leq_m \overline{B}$.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{5.28} \textbf{Rice's theorem} Let $P$ be any nontrivial property of the language of a TM. Prove that the problem of determining whether a given Turing machine's language has property $P$ is undecidable.
+
+In more formal terms, let $P$ be a language consisting of TM descriptions where $P$ fulfills two conditions. First, $P$ is nontrivial - it contains some but not all, TM descriptions. Second, $P$ is a property of the TM's language - whenever $L(M_1) = L(M_2)$, we have $\desc{M_1} \in P$ iff $\desc{M_2} \in P$, where $M_1$ and $M_2$ are any TMs. Prove that $P$ is an undecidable language.
+
+\begin{mdframed}
+\begin{proof}
+Assume for the sake of contradiction that $P$ is a decidable language satisfying the properties and let $R_P$ be a TM that decides $P$. We show how to decide $A_\TM$ using $R_P$ by constructing TM $S$. First, let $T_\emptyset$ be a TM that always rejects, so $L(T_\emptyset) = \emptyset$. 
+
+We could assume that $\desc{T_\emptyset} \not \in P$ without loss of generality because we could proceed with $\overline{P}$ instead of $P$ if $\desc{T_\emptyset}\in P$. 
+
+Because $P$ is not trivial, there exists a TM $T$ with $\desc{T} \in P$. Design $S$ to decide $A_\TM$ using $R_P$'s ability to distinguish between $T_\emptyset$ and $T$.
+
+$S$ = On input $\desc{M, w}$:
+\begin{enumerate}
+\item Use $M$ and $w$ to construct the following TM $M_w$.
+
+$M_w$ = On input $x$:
+\begin{enumerate}
+\item Simulate $M$ on $w$. If it halts and rejects, \textit{reject}. If it accepts, proceed to stage 2.
+\item Simulate $T$ on $x$. If it accepts, \textit{accept}.
+\end{enumerate}
+\item Use TM $R_P$ to determine whether $\desc{M_w}\in P$. Output whatever $R_P$ outputs.
+\end{enumerate}
+TM $M_w$ simulates $T$ if $M$ accepts $w$. Hence $L(M_w) = L(T)$ if $M$ accepts $w$, and $L(M_w) = \emptyset$ otherwise. Therefore, $\desc{M_w} \in P$ iff $M$ accepts $w$.
+
+\end{proof}
+\end{mdframed}
+
+\textbf{5.29} 
+Show that both conditions in Problem \textbf{5.28} are necessary for proving that $P$ is undecidable.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{5.30} Use Rice's theorem, prove the undecidability of each of the following languages
+
+\label{lang:INFINITETM_UDCDB}
+\textbf{a.} $INFINITE_\TM = \{ \desc{M} \mid \text{$M$ is a TM and $L(M)$ is an infinite language.}\}$
+
+\begin{mdframed}
+\begin{proof}
+$INFINITE_\TM$ is a language of TM descriptions. It satisfies the two conditions of Rice's theorem. First, its is nontrivial because some TMs have infinite languages and others do not. Second, it depends only on the language. If two TMs recognize the same language, either both have the descriptions in $INFINITE_\TM$ or neither do. Consequently, Rice's theorem implies that $INFINITE_\TM$ is undecidable.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} $\{ \desc{M} \mid \text{$M$ is a TM and 1011 $\in L(M)$}\}$
+\begin{mdframed}
+\begin{proof}
+See \textbf{5.30 a.}
+
+$L(M_1) = \{0, 1\}^*$ and $L(M_2) = \emptyset$
+\end{proof}
+\end{mdframed}
+
+\label{lang:ALLTM_UDCDB}
+\textbf{c.} $ALL_\TM = \{ \desc{M} \mid \text{$M$ is a TM and $L(M) = \Sigma^*$}\}$
+\begin{mdframed}
+\begin{proof}
+See \textbf{5.30 a.}
+\end{proof}
+\end{mdframed}
+
+\textbf{5.34} Let 
+\begin{align*}
+X = \{\desc{M, w} \mid & \text{$M$ is a single-tape TM that never modifies } \\
+& \text{the portion of the tape that contains the input $w$}\}
+\end{align*}
+Is $X$ decidable? Prove your answer.
+\begin{mdframed}
+\begin{proof}
+We show that $X$ is undecidable by showing that $A_\TM \leq X$. Assume $R$ decides $X$, we build another TM $S$ that uses $R$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, where $M$ is a TM
+\begin{enumerate}
+\item Build another machine $M'$ using $M$ and $w$
+
+$M'$ on input $x$
+\begin{enumerate}
+\item Add a special symbol $\$$ at the end of the input. Then copy the cells that contain $w$ to the left of $\$$.
+\item Simulate $M$ on $w$, treating the special symbol as the left end of this simulation. 
+\item If $M$ accepts $w$, go all the way to the first cell that contains $w$ and write a different symbol on that cell.
+\end{enumerate}
+\item Run $R$ on $\desc{M', w}$.
+\item If $R$ accept, \textit{reject}; if $R$ reject, \textit{accept}.
+\end{enumerate}
+
+If $M$ accepts $w$, then $M'$ will modify the portion of the tape that contains the input $w$, then $R$ will reject and hence $S$ accept. If $M$ doesn't accept $w$, then $M'$ will never modify the portion of the tape that contains the input, then $R$ will accept and hence $S$ reject.
+
+\medskip
+Since $A_\TM$ is undecidable, $X$ is also undecidable.
+\end{proof}
+\end{mdframed}

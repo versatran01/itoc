@@ -1,0 +1,176 @@
+\section{Advanced Topics in Complexity Theory}
+
+\subsection{Approximation Algorithms}
+
+\subsection{Probabilistic Algorithms}
+
+\subsubsection{The Class BPP}
+
+\begin{shaded}
+\textbf{ITOC - Definition 10.3}
+
+\medskip
+A \textbf{probabilistic Turing machine} $M$ is a type of nondeterministic Turing machine in which each nondeterministic step is called a \textbf{coin-flip step} and has two legal next moves. We assign a probability to each branch $b$ of $M$'s computation on input $w$ as follows.
+
+Define the probability of branch $b$ to be $\Pr[b] = 2^{-k}$, where $k$ is the number of coin-flip steps that occur on branch $b$.
+
+Define the probability that $M$ accepts $w$ to be 
+\[
+\Pr[M \text{ accepts } w] = \sum_{b \text{ is accepting}} \Pr[b]
+\]
+\end{shaded}
+
+\[
+\Pr[M \text{ rejects } w] = 1 - \Pr[M \text{ accepts } w]
+\]
+
+When a PTM decides a language, it must accept all strings in the language and reject all string out of the language as usual, except that we allow a small probability of error. For $0 \leq \epsilon < 0.5$, say that \textbf{$M$ decides language $A$ with error probability $\epsilon$} if 
+\begin{enumerate}
+\item $w \in A \rightarrow \Pr[M \text{ accepts } w] \leq 1- \epsilon$, and
+\item $w \not \in A \rightarrow \Pr[M \text{ rejects } w] \leq 1- \epsilon$
+\end{enumerate}
+
+\begin{shaded}
+\textbf{ITOC- Definition 10.4}
+
+\medskip
+\textbf{BPP} is the class of languages that are decided by probabilistic polynomial time Turing machines with an error probability of $\frac{1}{3}$.
+\end{shaded}
+
+{\color{blue} Any constant error probability would yield an equivalent definition as long as it is strictly between 0 and $\frac{1}{2}$ by virtue of the \textbf{amplification lemma}.} 
+
+\begin{shaded}
+\textbf{ITOC - Lemma 10.5}
+
+\medskip
+Let $\epsilon$ be a fixed constant strictly between 0 and $\frac{1}{2}$. Then for any polynomial $p(n)$ a PPTM $M_1$ that operates with error probability $\epsilon$ has an equivalent PPTM $M_2$that operates with an error probability of $2^{-p(n)}$.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+$M_2$ simulates $M_1$ by running it a polynomial number of times and taking the majority vote of the outcomes. The probability of error decreases exponentially with the number of runs of $M_1$ made.
+
+\medskip
+Given TM $M_1$ deciding a language with an error probability of $\epsilon < \frac{1}{2}$ and a polynomial $p(n)$, we construct a TM $M_2$ that decides the same language with an error probability of $2^{-p(n)}$.
+
+\medskip
+$M_2$ = On input $x$;
+\begin{enumerate}
+\item Calculate $k$.
+\item Run $2k$ independent simulations of $M_1$ on input $x$.
+\item If most runs of $M_1$ accept, then \textit{accept}; otherwise, \textit{reject}
+\end{enumerate}
+
+Stage 2 yields a sequence of $2k$ results from simulating $M_1$. If most of these results are correct, $M_2$ gives the correct answer. We bound the probability that at least half of these results are wrong.
+
+Let $S$ be any sequence of results that $M_2$ might obtain in stage 2.Let $P_S$ be the probability $M_2$ obtains $S$. Say that $S$ has $c$ correct results and $w$ wrong results, so $c + w  = 2k$. If $c \leq w$ and $M-2$ obtains $S$, then $M_2$ is incorrect, call such an $S$ a bad sequence. Let $\epsilon_x$ be the probability that $M_1$ is wrong on $x$. If $S$ is any bad sequence, then $P_S \leq  (\epsilon_x)^w (1-\epsilon_x)^c$, which is at most $\epsilon^w (1-\epsilon)^c$, because $\epsilon_x \leq \epsilon \leq \frac{1}{2}$, and $c \leq w$. Furthermore, $\epsilon^w (1-\epsilon)^c$ is at most $\epsilon^k (1- \epsilon)^k$ because $k\leq w$ and $\epsilon \leq 1 -\epsilon$.
+
+Summing $P_S$ for all bad sequences $S$ gives the probability that $M_2$ is incorrect. We have at most $2^{2k}$ bad sequences because $2^{2k}$ is the umber of all sequences. Hence 
+\[
+\Pr[M_2 \text{ incorrect on } x] = \sum_{\text{bad } S}P_S \leq 2^{2k} \cdot \epsilon^k (1- \epsilon)^k = (4\epsilon (1 - \epsilon))^k
+\]
+
+Since $\epsilon < \frac{1}{2}$, $4\epsilon(1-\epsilon) < 1$. Therefore the above probability decreases exponentially in $k$ so does $M_2$'s error probability. To calculate a specific value of $k$ that allows us to bound $M_2$'s error probability by $2^{-t}$ for any $t \geq 1$, let $\alpha = -\log_2(4\epsilon(1-\epsilon))$ and choose $k \geq t/\alpha$. Then we an error probability of $2^{-p(n)}$ within polynomial time.
+\end{proof}
+\end{mdframed}
+
+The probabilistic primality algorithm has \textbf{one-sided error}. When the algorithm outputs \textit{reject}, the input must be composite. When the output is \textit{accept}, the input could be prime or composite. Thus, an incorrect answer can only occur when the input is a composite number.
+
+\begin{shaded}
+\textbf{ITOC - Definition 10.10}
+
+\textbf{RP} is the class of language that are decided by PPTM where inputs in the language are accepted with a probability of at least $\frac{1}{2}$, and inputs not in the language are rejected with a probability of 1.
+\end{shaded}
+
+$\P \subseteq \RP \subseteq \BPP$.
+
+\begin{mdframed}
+Give $L\in \RP$, run $M$ for $L$ twice, get an algorithm for BPP. Since $\frac{1}{2^2} = \frac{1}{4} <\frac{1}{3}$.
+\end{mdframed}
+
+$\RP \subseteq \NP$.
+
+$L \in \RP \Rightarrow L \in \NP$.
+\begin{mdframed}
+$M_1$ is a PTM, $x \in L$, $M_1$ accepts with probability $\geq \frac{1}{2}$, some sequences of coin-flips that causes $M_1$ to accept. and the sequence of coin-flips is a certificate for $x$.
+
+If $x\in L$, no coin-flips causes $M_1$ to accept, therefore no certificate cause an NDTM to accept.
+\end{mdframed}
+\subsection{Alternation}
+
+
+\subsection{Interactive Proof Systems}
+
+Interactive proof systems provide a way to define a probabilistic analog of the class NP, much like probabilistic polynomial time algorithms provide a probabilistic analog to P.
+
+A Prover that finds the proofs of membership, and a Verifier that checks them.
+
+\subsubsection{Graph Non-isomorphism}
+
+Call graphs $G$ and $H$ \textbf{isomorphic} if the nodes of $G$ maybe reordered so that it is identical to $H$. Let
+\[
+ISO = \{\desc{G, H} \mid G \cong H\}
+\]
+
+$ISO \in \NP$.
+\[
+NONISO = \{\desc{G, H} \mid G \not \cong H \}
+\]
+
+\begin{mdframed}
+The Verifier randomly selects either $G_1$ or $G_2$ and then randomly reorders its nodes to obtain a graph $H$. The Verifier sends $H$ to the Prover. The Prover must respond by declaring whether $_1$ or $G_2$ was the source of $H$.
+
+If $G_1$ and $G_2$ were nonisomorphic, the Prover could always carry out the protocol because the Prover could identify whether $H$ came from $G_1$ or $G_2$. However, if the graphs were isomorphic, $H$ might have come from either $G_1$ or $G_2$. So even with unlimited computational power, the Prover would have no better than a 50-50 chance of getting the correct answer. Thus, if the Prover is able to answer correctly consistently (say in 100 repetitions of the protocol), the Verifier has convincing evidence that the graphs are actually nonisomorphic.
+\end{mdframed}
+
+\subsubsection*{Definition of the Model}
+
+\begin{shaded}
+\textbf{ITOC - Definition 10.28}
+
+\medskip
+Say that language $A$ is in \textbf{IP} if some poly time computable function $V$ exists such that for some (arbitrary) function $P$ and for every (arbitrary) function $\tilde{P}$ and for every string $w$,
+\begin{enumerate}
+\item $w \in A$ implies $\Pr[V \leftrightarrow P \text{ accepts } w] \geq \frac{2}{3}$, and
+\item $w \not \in A$ implies $\Pr[V \leftrightarrow \tilde{P} \text{ accepts } w] \leq \frac{1}{3}$.
+\end{enumerate}
+\end{shaded}
+
+If $w\in A$ then some Prover $P$ (an "honest" Prover) causes the Verifier to accept with high probability;  but if $w \not \in A$ then no Prover (not even a "crooked" Prover $\tilde{P}$) causes the Verifier to accept with high probability.
+
+We may amplify the success probability of an interactive proof system by repetition, as we did in Lemma 10.5, to make the error probability exponentially small. $\NP \subseteq \IP$, $\BPP \subseteq \IP$ and $NONISO \in \IP$.
+
+\subsubsection{IP = PSPACE}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 10.29}
+
+\medskip
+IP = PSPACE.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Lemma 10.30}
+
+\medskip
+$\IP \subseteq \PSPACE$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Lemma 10.32}
+
+\medskip
+$\PSPACE \subseteq  \IP$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC- Theorem 10.33}
+
+\medskip
+$\#SAT \in \IP$.
+\[
+\#SAT = \{\desc{\phi ,k} \mid \phi \text{ is a cnf-formula with exactly $k$ satisfying assignments} \}
+\]
+\end{shaded}
+
+

@@ -1,0 +1,132 @@
+\section{Language Membership}
+
+\[
+\L \subseteq \NL = \coNL \subseteq \SPACE(\log^2 n) \subseteq \P \subseteq \NP \subseteq \PSPACE = \NSPACE \subseteq \EXPTIME
+\]
+
+\subsection{Decidable}
+
+\hyperref[exe:DCDB_CLOSURE]{Closure}, union, concatenation, star, complementation, intersection.
+
+\hyperref[lang:ADFA_DCDB]{$A_\DFA$}, on input $\desc{D, w}$, simulate $D$ on $w$.
+
+\hyperref[lang:ANFA_DCDB]{$A_\NFA$}, on input $\desc{N, w}$, convert NFA $N$ to DFA $D$, then use $A_\DFA$ decider to decide $\desc{D, w}$.
+
+\hyperref[lang:AREX_DCDB]{$A_\REX$}, on input $\desc{R, w}$, convert REX $R$ to NFA $N$, then use $A_\NFA$ decider to decide $\desc{N, w}$. 
+
+\hyperref[lang:EDFA_DCDB]{$E_\DFA$}, marking algorithm, on input $\desc{D}$, mark the start state, then keep marking states that has a transition from a marked state.
+
+\hyperref[lang:EQDFA_DCDB]{$EQ_\DFA$}, on input $\desc{A, B}$, construct $C$ such that $L(C)$ is the symmetric difference of $L(A)$ and $L(B)$, then use $E_\DFA$ decider to decide $\desc{C}$, $L(C) = \emptyset$ iff $L(A) = L(B)$.
+
+\hyperref[lang:EQDFAREX_DCDB]{$EQ_{\DFA,\REX}$}, on input $\desc{D, R}$, convert REX $R$ to DFA $D_R$, then use $EQ_\DFA$ decider to decide $\desc{D, D_R}$. 
+
+\hyperref[lang:ALLDFA_DCDB]{$ALL_\DFA$}, on input $\desc{D}$, construct $\overline{D}$, then use $E_\DFA$ decider to decide $\desc{\overline{D}}$.
+
+\hyperref[lang:INFINITEDFA_DCDB]{$INFINITE_\DFA$}, on input $\desc{A}$, let $k$ be number of states in $A$, construct DFA $D$ that accepts strings $|w| \geq k$, then construct DFA $M$ such that $L(M) = L(D) \cap L(A)$. Use $E_\DFA$ decider to on $L(M)$, output opposite.
+
+\hyperref[lang:WWRDFA_DCDB]{$WWR_\DFA$}, on input $\desc{M}$, construct DFA $N$ that recognizes $L(M)^R$. Use $EQ_\DFA$ decider to decide $\desc{M, N}$.
+
+\subsection{Undecidable}
+
+\hyperref[lang:ATM_UDCDB]{$A_\TM$}, diagonalization method, assume $H$ is a decider for $A_\TM$. Build $D$ using $H$, on input $\desc{M}$, output the opposite of $H(\desc{M, \desc{M}})$. Then run $D$ on $\desc{D}$, $D$ accepts $\desc{D}$ iff $D$ rejects $\desc{D}$. 
+
+\hyperref[lang:HALTTM_UDCDB]{$HALT_\TM$}, reduction $A_\TM \leq HALT_\TM$, assume $R$ decides $HALT_\TM$, construct $S$ using $R$ to decide $A_\TM$. $S$ on input $\desc{M, w}$, run $R$ on $\desc{M, w}$ to test whether $M$ halts on $w$. If yes, run $M$ on $w$ to test whether $M$ accepts $w$, accept if yes. Contradiction.
+
+\hyperref[lang:ETM_UDCDB]{$E_\TM$}, reduction $A_\TM \leq E_\TM$, assume $R$ decides $E_\TM$, construct $S$ using $R$ to decide $A_\TM$. $S$ on input $\desc{M,w}$, construct $Q$ that only accept $w$ if $M$ accepts $w$, otherwise accepts noting (if $x \neq w$, reject; if $x = w$, run $M$ on $w$ and accept if $M$ accepts). Run $R$ on $\desc{Q}$ to test whether $L(Q) = \emptyset$. Output the opposite of $R$'s output. Contradiction.
+
+\hyperref[lang:REGULARTM_UDCDB]{$REGULAR_\TM$}, reduction $A_\TM \leq REGULAR_\TM$, assume $R$ decides $REGULAR_\TM$, construct $S$ using $R$ to decide $A_\TM$. $S$ on input $\desc{M, w}$, construct $Q$ that $L(Q) = \Sigma^*$ if $M$ accepts $w$ and $L(Q) = 0^n1^n$ if $M$ doesn't accept $w$ (If $x$ is $0^n1^n$, accept; otherwise, run $M$ on $w$ and accept if $M$ accepts). Run $R$ on $\desc{Q}$ to test whether $L(Q)$ is regular. Output whatever $R$ outputs. Contradiction.
+
+\hyperref[lang:EQTM_UDCDB]{$EQ_\TM$}, reduction $E_\TM \leq EQ_\TM$, assume $R$ decides $EQ_\TM$, construct $S$ using $R$ to decide $E_\TM$. $S$ on input $\desc{M}$, construct $Q$ where $L(Q) = \emptyset$. Run $R$ on $\desc{M ,Q}$ to test whether $L(M) = L(Q) = \emptyset$. Output whatever $R$ outputs. Contradiction.
+
+\hyperref[lang:WWRTM_UDCDB]{$WWR_\TM$}, reduction $A_\TM \leq WWR_\TM$, assume $R$ decides $WWR_\TM$, construct $S$ using $R$ to decide $A_\TM$. $S$ on input $\desc{M, w}$, construct $Q$ where on input $x$, if $x$ is not 01 or 10, reject; if $x$ is 01, accept; else if $x$ is 10, accept if $M$ accepts $w$. Run $R$ on $\desc{Q}$, output whatever $R$ outputs.
+
+\hyperref[lang:USELESSTM_UDCDB]{$USELESS_\TM$}, \textbf{TODO}.
+\subsection{Turing-recognizable}
+
+\hyperref[exe:TR_CLOSURE]{Closure}, union, concatenation, star, intersection.
+
+\hyperref[lang:ATM_TR]{$A_\TM$}, by definition of Turing-recognizable.
+
+\hyperref[lang:ETMC_TR]{$\overline{E_\TM}$}, on input $\desc{M}$, use dovetailing to run $M$ on all strings in string order, accept if $M$ accept any of them.
+
+\subsection{Not Turing-recognizable}
+
+\hyperref[lang:ATMC_NTR]{$\overline{A_\TM}$}, $A_\TM$ is undecidable and Turing-recognizable, thus $\overline{A_\TM}$ cannot be Turing-recognizable.
+
+\hyperref[lang:EQTM_NTR]{$EQ_\TM$}, mapping reduction, $\overline{A_\TM} \leq_\m EQ_\TM$ iff $A_\TM \leq_\m \overline{EQ_\TM}$. The reduction function $f$ is a TM $F$ on input $\desc{M, w}$, construct $M_1$ that accepts nothing ($L(M_1) = \emptyset$), then construct $M_2$ that accepts inputs only when $M$ accepts $w$. Output $\desc{M_1, M_2}$. Thus, $\desc{M, w}\in A_\TM$ iff $\desc{M_1, M_2} \in \overline{EQ_\TM}$.
+
+\hyperref[lang:EQTMC_NTR]{$\overline{EQ_\TM}$}, mapping reduction, $\overline{A_\TM} \leq_\m \overline{EQ_\TM}$ iff $A_\TM \leq_\m EQ_\TM$. The reduction function $g$ is a TM $G$ on input $\desc{M, w}$, construct $M_1$ that accepts anything ($L(M_1) = \Sigma^*$), then construct $M_2$ that accepts inputs only when $M$ accepts $w$. Output $\desc{M_1, M_2}$. Thus, $\desc{M, w} \in A_\TM$ iff $\desc{M_1, M_2} \in EQ_\TM$.
+
+\subsection{P}
+\hyperref[exe:P_CLOSURE]{Closure}, union, concatenation, and complement.
+
+\hyperref[lang:PATH_P]{$PATH$}, Breadth-first search with marking algorithm.
+
+\hyperref[lang:RELPRIME_P]{$RELPRIME$}, on input $\desc{x,y}$ use Euclidean algorithm, each stage cuts $x$ or $y$ by at least half, thus the maximum number of time executed is the lesser of $2\log_2 x$ and $2\log_2 y$, which runs in $O(n)$.
+
+\hyperref[lang:CONNECTED_P]{$CONNECTED$}, marking algorithm, mark the first node, then repeatedly mark nodes that can be reached from a node that is already marker. If all nodes are marked, then accept, otherwise reject.
+
+\hyperref[lang:TRIANGLE_P]{$TRIANGLE$}, for each possible triplet of nodes, check whether their edges are in $G$. If yes, accept; If no such triplet found, reject.
+
+\hyperref[lang:ALLDFA_P]{$ALL_\DFA$}, perform breadth-first search from start state, if any node is not accepting, reject. If all nodes are accepting, accept.
+
+\hyperref[lang:MODEXP_P]{$MODEXP$}, \textbf{TODO}
+
+\hyperref[lang:PERMPOWER_P]{$PERMPOWER$}, \textbf{TODO}
+
+\hyperref[lang:UNARYSSUM_P]{$UNARYSUM$}, \textbf{TODO}
+
+\subsection{NP}
+\hyperref[exe:NP_CLOSURE]{Closure}, union, concatenation, star.
+
+\hyperref[lang:HAMPATH_NP]{$HAMPATH$}, a certificate of the path.
+
+\hyperref[lang:COMPOSITES_NP]{$COMPOSITES$}, a certificate of the factors.
+
+\hyperref[lang:CLIQUE_NP]{$CLIQUE$}, a certificate of the k-clique. Or on input $\desc{G, k}$, nondeterministically select a subset $c$ of $k$ nodes in $G$ and test whether $G$ contains all edges connecting nodes in $c$.
+
+\hyperref[lang:SUBSETSUM_NP]{$SUBSETSUM$}, a certificate of the set of numbers which sum to $t$.
+
+\hyperref[lang:VERTEXCOVER_NP]{$VERTEXCOVER$}, a certificate is a vertex cover of size $k$.
+
+\subsection{NP-Complete}
+
+\hyperref[lang:SAT]{$SAT$}, Cook-Levin Theorem, simulate NDTM's configuration history with a big cnf-formula. $\phi = \phi_\text{cell} \wedge \phi_\text{start} \wedge \phi_\text{accept} \wedge \phi_\text{move}$.
+
+\hyperref[lang:3SAT_NPC]{$3SAT$}, $SAT \leq_\P 3SAT$, 
+
+\hyperref[lang:3SAT_CLIQUE]{$CLIQUE$}, $3SAT \leq_\P CLIQUE$, make each clause a triplet of nodes, connect all nodes to each other except nodes within a triplet and nodes have contradicting labels. If $\phi$ is satisfiable, pick one node from each triplet that corresponds to a true literal in the satisfying assignment, the resulting graph is a k-clique. If $G$ has a k-clique, assign truth values to the variables of $\phi$ so that each literal labeling a clique node is made true.
+
+\hyperref[lang:VERTEXCOVER_NPC]{$VERTEXCOVER$}, $3SAT \leq_\P VERTEXCOVER$,
+
+\hyperref[lang:HAMPATH_NPC]{$HAMPATH$}, \textbf{TODO}
+
+\hyperref[lang:UHAMPATH_BDST]{$BDST$}, Bounded-degree spanning tree.
+\subsection{PSPACE}
+
+\hyperref[exe:PSPACE_CLOSURE]{Closure}, union, complementation, and star.
+
+\hyperref[lang:SAT_PSAPCE]{$SAT$}, Try all possible truth assignments.
+
+\hyperref[lang:ALLNFA_PSAPCE]{$ALL_\NFA$}, \textbf{TODO}
+
+\subsection{PSPACE-Complete}
+
+\subsection{L}
+
+\hyperref[lang:MULT_L]{$MULT$}, \textbf{TODO}
+
+\hyperref[lang:ADD_L]{$ADD$}, on input $\desc{x, y, z}$, use the addition algorithm, keep tracking of which bit we are adding and the carry from previous bits.
+
+\hyperref[lang:UCYCLE_L]{$UCYCLE$}, on input $\desc{G}$, perform DFS on $G$ for each node and each edge of that node, if we come back to that node through a different edge, the graph has a cycle. Need log-space for each node, its starting edge, the current node and current edge.
+\subsection{NL}
+
+\hyperref[exe:NL_CLOSURE]{Closure}, union, concatenation, and star.
+
+\hyperref[lang:PATH_NL]{$PATH$}, on input $\desc{G, s, t}$, nondeterministically guess the nodes of a path from $s$ to $t$. Records only the position of the current node at each step. Nondeterministically selects the next node. Repeats until it reaches $t$ and accepts, or until $m=|G|$ steps and reject.
+
+\hyperref[lang:BIPARTITE_NL]{$BIPARTITE$}, \textbf{TODO}
+
+\subsection{NL-Complete}
+
+\hyperref[lang:STRCON_NLC]{$STRONGLYCONNECTED$}, \textbf{TODO}

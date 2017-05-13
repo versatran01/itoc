@@ -1,0 +1,92 @@
+\section{Introduction}
+
+
+\subsection{Mathematical Notions and Terminology}
+
+\subsubsection{Sequences and Tuples}
+
+A \textbf{sequence} of objects is a list of these objects in some order.
+
+A sequence with $k$ elements is a \textbf{k-tuple}.
+
+\subsection*{Functions and Relations}
+
+The set of possible inputs to a function is called its \textbf{domain}.
+
+The outputs of a function come from a set called its \textbf{range}.
+
+\[
+\mapdef{f}{D}{R}
+\]
+
+Functions with $k$ arguments is called a \textbf{k-ary function}.
+
+A binary relation $R$ is an equivalence relation if $R$ satisfies three conditions:
+\begin{enumerate}
+\item $R$ is \textbf{reflexive} if for every $x$, $xRx$;
+\item $R$ is \textbf{symmetric} if for every $x$ and $y$, $xRy$ implies $yRx$;
+\item $R$ is \textbf{transitive} if for every $x$, $y$, and $z$, $xRy$ and $yRz$ implies $xRz$.
+\end{enumerate}
+
+\subsubsection{Graphs}
+
+The number of edges at a particular node is the \textbf{degree} of that node.
+
+No more than one edge is allowed between any two nodes.
+
+For a graph $G$, $(i, j)$ represents an edge between node $i$ and node $j$. Order of $i$ and $j$ doesn't matter in an undirected graph. We can also describe undirected edges using set notation $\{i, j\}$.
+
+A \textbf{simple path} is a path that doesn't repeat any node.
+
+A graph is \textbf{connected} if every two nodes have a path between them. 
+
+A path is a \textbf{cycle} if it starts and ends in the same node.
+
+A \textbf{simple cycle} is one that contains at least three nodes and repeats only the first and last nodes.
+
+A graph is a \textbf{tree} if it is connected and has no simple cycles.
+
+A path in which all the arrows point in the same direction as its steps is called a \textbf{directed path}. 
+
+A directed graph is \textbf{strongly connected} if a directed path connects every two nodes.
+
+\subsubsection{Strings and Languages}
+
+An \textbf{alphabet} ($\Sigma$) is any nonempty \textbf{\textit{finite}} set. 
+
+The members of the alphabet are the \textbf{symbols} of the alphabet.
+
+A \textbf{string over an alphabet} ($s$ or $w$) is a \textbf{\textit{finite}} sequence of symbols from that alphabet.
+
+The string of length zero is called the \textbf{empty string} ($\epsilon$).
+
+A \textbf{language} ($L$) is a set of strings.
+
+$\Sigma^*$ is the set of all strings over $\Sigma$.
+{\color{blue} Different from power set, $\Sigma^*$ is usually infinite.}
+
+{\color{blue} $\emptyset$ is a language, $\{\epsilon\}$ is a different language.}
+
+Strings in a language can be infinite, but alphabets have to be finite.
+
+$\Sigma^k$ is the set of strings of length $k$, each of whose symbol is in $\Sigma$. $\Sigma^0 = \{\epsilon\}$.
+
+$\Sigma = \{0, 1\}$ is the alphabet, $\Sigma^1 = \{0, 1\}$ is a set of strings.
+
+A \textbf{problem} is the question of deciding whether a given string is a member of some particular language.
+
+\subsubsection{Boolean Logic}
+
+the \textbf{implication} operation $\rightarrow$ and is 0 if its first operand is 1 and its second operand is 0.
+\[
+A \rightarrow B \Leftrightarrow \neg A \vee	B
+\]
+
+Some examples
+\begin{align*}
+P \vee Q 			& \; \Leftrightarrow \; \neg(\neg P \wedge \neg Q) \\
+P \rightarrow Q 	& \; \Leftrightarrow \; \neg P \vee Q \\
+P \leftrightarrow Q & \; \Leftrightarrow \; (P \rightarrow Q) \wedge (Q \rightarrow P) \\
+P \oplus Q 			& \; \Leftrightarrow \; \neg(P \leftrightarrow Q)
+\end{align*}
+

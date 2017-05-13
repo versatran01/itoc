@@ -1,0 +1,158 @@
+\subsection{Exercises}
+
+\textbf{10.3} Prove that if $A \leq_\L B$ and $B$ is in NC, then $A$ is in NC.
+\begin{mdframed}
+\begin{proof}
+The circuit for $A$ on an input $w$ works as follows: It first computes the string $y$ that is the result of applying the reduction. As we saw, $L$ is contained in NC$^2$ and hence this reduction can be done by a polynomial-sized circuit of depth $\log^2 n$. We then use the NC circuit for $B$ on the output of this reduction, resulting in an overall circuit whose depth is poly-logarithmic (which is just a way of saying that it is some constant power of the log), and whose size is polynomial.
+\end{proof}
+\end{mdframed}
+
+\textbf{10.7} Show that $\BPP \subseteq \PSPACE$.
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ be a PPTM, $M$ can be modified so that it makes exactly $n^k$ coin flips. Then there will be a total of $2^{n^k}$ computation paths. The problem of determine whether $M$ accepts or not is to count the number of accepting branches $B$ and compare it to $P = \frac{2}{3}(2^{n^k})$. If $B \geq P$, accept; otherwise, reject. This takes only polynomial space because we can simulate all $M$'s computation paths sequentially, using the same amount of space. Each path has $n^k$ configurations and therefore takes only polynomial space.
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\textbf{10.11} Let $M$ be a PPTM, and let $C$ be a language where for some fixed $0 < \epsilon_1 < \epsilon_2 < 1$, 
+\begin{enumerate}
+\item $w \not \in C$ implies $\Pr[M \text{ accepts } w] \leq \epsilon_1$, and
+\item $w \in C$ implies $\Pr[M \text{ accepts } w] \geq \epsilon_2$.
+\end{enumerate}
+
+Show that $C \in \BPP$. (Hint: Use Lemma 10.5)
+\begin{mdframed}
+\begin{proof}
+Obviously, $M$ might not be a BPP machine. Thus we construct another machine $N$ that runs $M$ multiple times and we show that $N$ decides $C$ in BPP.
+
+\medskip
+For real numbers $\epsilon_1 < \epsilon_2$, there exists $c = \frac{\epsilon_1 + \epsilon_2}{2}$, such that $\epsilon_1 < c < \epsilon 2$. $N$ will run $M$ $k$ times. Let $A_k$ be the number of times that $M$ says accept. If $\frac{A_k}{k} \geq c$, $N$ accepts; otherwise $N$ rejects. Thus we have
+\begin{align*}
+w \in C, \quad      & \Pr[N \text{ accepts } w] = \Pr [ A_k \geq ck] \\
+w \not \in C, \quad & \Pr[N \text{ rejects } w] = \Pr [ A_k < ck]
+\end{align*}
+or looking at the probability of error
+\begin{align*}
+w \in C, \quad      & \Pr[N \text{ rejects } w] = \Pr [ A_k < ck] \\
+w \not \in C, \quad & \Pr[N \text{ accepts } w] = \Pr [ A_k \geq ck]
+\end{align*}
+
+To show that $N \in \BPP$, we want to show that when $w \in C$, $\Pr [ A_k < ck]$ is strictly less than $\frac{1}{2}$ and when $w \not \in C$, $\Pr [ A_k \geq ck]$ is also strictly less than $\frac{1}{2}$.
+
+\medskip
+First look at $w \in C$. Let $A_k$ be a random variable, then it is the sum of $k$ random variables $X_1, \ldots X_k$ (each is the output of a call to $M$), each with a mean $\mu_k \geq \epsilon_2$. Then $A_k$ has a mean $c_2 \geq \epsilon_2$. We also know that $\Pr [ A_k < ck] \leq \Pr [ | \frac{A_k}{k} - c_2| > c_2 - c]$, and since $c_2 - c \leq \epsilon_2 - c > 0$, we know by Chebyshev inequality that $\lim_{k\rightarrow \infty} \Pr[|\frac{A_k}{k} - c_2| > c_2 -c] = 0$. So there exists a $k$ such that this probability is strictly less than $\frac{1}{2}$. Then same with the case when $w \not \in C$. Thus by amplification lemma, $N \in \BPP$.
+\end{proof}
+\end{mdframed}
+
+\textbf{10.19} Show that if $\NP \subseteq \BPP$, then $\NP = \RP$.
+\begin{mdframed}
+\begin{proof}
+First show that $\RP \subseteq \NP$.
+
+If $L \in \RP$, then there exists a PPTM $M$ such that if $w \in L$, then $M$ accepts $w$ with probability $\frac{1}{2}$, which means there exists a sequence of coin-flips that causes $M$ to accept $w$. This sequence of coin-flips is a certificate for $w$. On the other hand, if $w \not \in L$, then $M$ rejects $w$ with probability of 1, which means no sequence of coin-flips exists to cause $M$ to accept $w$. Therefore, $\RP \subseteq \NP$. 
+
+\medskip
+Then we show that if $\NP \subseteq \BPP$, then $\NP \subseteq \RP$. We do this by showing that $SAT \in \RP$. Since $SAT$ is NP-complete, then $\NP \subseteq \RP$.
+
+Since $SAT \in \NP$ and given that $\NP \subseteq \BPP$, $SAT \in \BPP$. Then there exists a PPTM $M$ that decides $SAT$ with two-sided error with error probability $\frac{1}{3}$.
+
+We will construct an RP machine $N$, such that if $\desc{\phi} \in SAT$, then $N$ accepts $\desc{\phi}$ with a probability of at least $\frac{1}{2}$, and if $\desc{\phi} \not \in SAT$, $N$ rejects $\desc{\phi}$ with a probability of 1. 
+
+\medskip
+The proposed machine $N$ works as follow:
+
+
+$N$ = On input $\desc{\phi}$, where $\phi$ is a Boolean formula:
+\begin{enumerate}
+\item Run $M$ on $\desc{\phi}$, if $M$ rejects, \textit{reject}.
+\item Otherwise, let $x_1, \ldots, x_m$ be variables of $\phi$ and try to find a satisfying assignment for each $x_i$, starting with $i = 1$.
+\item Set $x_i = 0$ and the resulting Boolean formula is $\phi_i$.
+\item Run $M$ on $\desc{\phi_i}$, if $M$ accepts, confirm this assignment; otherwise, set set $x_i = 1$.
+\item After all assignments are confirmed, check that if $\phi(x_1, \ldots, x_m) = 1$, if yes, \textit{accept}; if no, \textit{reject}
+\end{enumerate}
+
+This machine runs in polynomial time, because it calls $M$ at most $m+1$ times and $m \leq n$, where $n$ is the number of literals in $\phi$. Also check satisfiability is polynomial time. Hence, since $M$ is a PPTM, $N$ is also a PPTM.
+
+\medskip
+This algorithm is correct. If $\phi$ is not satisfiable, then either step 1 says reject and $N$ reject, or step 1 says accept, and $N$ proceed to try to find a satisfying assignment (and failed to find one) and reject in the end. So the probability that $N$ rejects $\desc{\phi}$ when $\desc{\phi} \not \in SAT$ is 1. 
+
+\medskip
+On the other hand, if $\phi$ is satisfiable, we show that $N$ accepts $\desc{\phi}$ with a probability of at least $\frac{1}{2}$. If $\phi$ is satisfiable, and if $M$ always being correct by saying accept to each $\desc{\phi_i}$, then we will get a satisfying assignment in the end. If $M$ ever makes a mistake in any of these $m$ calls, then in the end, $N$ will check this assignment and find out that it is not satisfiable, so it will reject, thus making a mistake itself. 
+
+\medskip
+Here we have to use amplification lemma to show that if $M$ is a PPTM with error probability of $\epsilon \in (0, 1/2)$, then there exists another PPTM $M'$ with error probability $2^{-n}$, where $n$ is the number of literals in $\phi$. Now we replace $M$ with $M'$ in the previous discussion since they are equivalent.
+
+\medskip
+Again, for $\desc{\phi} \in SAT$, the probability that $M'$ makes a mistake by outputting reject on $\desc{\phi_i}$ is thus $2^{-n}$. The probability of such event ($N$ making a mistake resulting from $M$ making at least 1 mistakes) happening is at most $\frac{m}{2^n}$. Again since $m \leq n$, $\frac{m}{2^n} \leq \frac{n}{2^n} \leq \frac{1}{2}$. Consequently, for $\desc{\phi} \in SAT$, $\Pr [N \text{ accepts } \desc{\phi}] \geq \frac{1}{2}$. Therefore $N$ is an RP machine and $SAT \in \RP$.
+\end{proof}
+\end{mdframed}
+
+\textbf{hw6 (3)} Suppose $M$ is a Probabilistic Turing Machine that recognizes a language $L$. On any input, $M$ runs in expected polynomial time, but always gives the right answer. In other words, on some branches of its computation $M$ could take a very long time, but the expected run-time over all its branches is polynomial. Does this imply that the language L is in BPP? Prove your answer. It may be helpful to look at
+Markov's inequality in elementary probability theory.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{10.20} Define a ZPP-machine to be a probabilistic Turing machine that is permitted three types of output on each of its branches: accept, reject, and $?$. A ZPP-machine $M$ decides a language $A$ if $M$ outputs the correct answer on every input string $w$ (accept if $w \in A$ and reject if $w \not \in A$) with probability at least $\frac{2}{3}$, and $M$ never
+outputs the wrong answer. On every input, $M$ may output $?$ with probability at most $\frac{1}{3}$ . Furthermore, the average running time over all branches of M on w must be bounded by a polynomial in the length of $w$. Show that $\RP \cap \coRP = \ZPP$, where ZPP is the collection of languages that are recognized by ZPP-machines.
+
+\begin{mdframed}
+\begin{proof}
+For a ZPP-machine
+\begin{align*}
+w \in A, & \quad \Pr[M \text{ accepts } w] \geq \frac{2}{3} \\
+         & \quad \Pr[M \text{ outputs } ?] \leq \frac{1}{3} \\
+         & \quad \Pr[M \text{ rejects } w] = 0 \\
+w \not \in A, & \quad \Pr[M \text{ accepts } w] = 0  \\
+         & \quad \Pr[M \text{ outputs } ?] \leq \frac{1}{3} \\
+         & \quad \Pr[M \text{ rejects } w] \geq \frac{2}{3}
+\end{align*}
+
+To show that ZPP = RP $\cap$ coRP, we need to show ZPP $\subseteq$ RP $\cap$ coRP and RP $\cap$ coRP $\subseteq$ ZPP. 
+
+\medskip
+To show that ZPP $\subseteq$ RP $\cap$ coRP, first show that ZPP $\subseteq$ RP. Let $A \in$ ZPP, then there exists a PTM $M$ that decides $A$ in expected polynomial time, with the probabilities defined above. We construct an RP machine $M'$ using $M$. $M'$ will run $M$ for at most $2t$ steps, where $t$ is the expected running time of $M$. If $M$ halts within $2t$ steps, then $M'$ outputs whatever $M$ outputs. If $M$ doesn't halt after $2t$ steps or outputs $?$, $M'$ rejects. Hence when $w \in A$, $\Pr[M' \text{ rejects } w] \leq \frac{1}{3}$ and when $w \not \in A$, $\Pr[M \text{ rejects } w] = 1$. So $L \in \RP$. By similar arguments, it is easy to show that ZPP $\subseteq$ coRP. Also by amplification lemma, we can change the error probability from $\frac{1}{3}$ to $\frac{1}{2}$. Thus ZPP $\subseteq$ RP $\cap$ coRP.
+
+\medskip
+Then show RP $\cap$ coRP $\subseteq$ ZPP. Let $A \in \RP \cap \coRP$. There exists an RP machine $M_1$ that decides $A$ in polynomial time and a coRP machine $M_2$ that decides $A$ in polynomial time.
+\begin{align*}
+w \in A, & \quad \Pr[M_1 \text{ accepts } w] \geq \frac{1}{2} \\
+& \quad \Pr[M_2 \text{ rejects } w] = 1 \\
+w \not \in A, & \quad \Pr[M_1 \text{ rejects } w] = 1  \\
+& \quad \Pr[M_2 \text{ accepts } w] \geq \frac{1}{2}
+\end{align*}
+
+We then build a ZPP machine $N$ that decides $A$ in expected polynomial time. $N$ will run both $M_1$ and $M_2$ on input $w$. If $M_1$ accepts, then it must be the case that $w \in A$, so $N$ accept. If $M_2$ accepts, then it must be the case that $w \not \in A$, so $N$ rejects. Otherwise output $?$. Obviously $N$ never makes mistakes, therefore $N \in$ ZPP and hence RP $\cap$ coRP $\subseteq$ ZPP.
+\end{proof}
+\end{mdframed}
+
+\textbf{hw6 (7)} Let $\phi = (x_1 + x_2 + \overline{x}_3)(\overline{x}_1 + \overline{x_2} + x_3)(\overline{x}_1 + x_2 + x_3)$.
+
+(a) What is the polynomial that results from arithmetizing $\phi$?
+
+(b) $\phi$ has 5 satisfying assignments. What is the true polynomial $\tilde{p}_1(z)$?
+
+(c) Suppose a prover is trying to prove that $\phi$ has 4 satisfying assignments. What would happen if she sent the true polynomial?
+
+(d) What might be another polynomial that the prover could send to hide the fact that she lied in the first round? For what random integer values do the true polynomial and the prover’s polynomial that you constructed have the same value?
+
+\begin{mdframed}
+\begin{proof}
+
+(a) 
+\begin{align*}
+p^1(x_1, x_2, x_3) =& (x_1 \vee x_2 \vee \overline{x}_3) = 1 - (1-x_1)(1-x_2) x_3 \\
+p^2(x_1, x_2, x_3) =& (\overline{x}_1 \vee \overline{x}_2 \vee x_3) = 1 - x_1 x_2 (1 - x_3)\\
+p^3(x_1, x_2, x_3) = &(\overline{x}_1 + x_2 + x_3) = 1 - x_1(1-x_2)(1-x_3) \\
+p(x_1, x_2, x_3) = &p^1(x_1, x_2, x_3) p^2(x_1, x_2, x_3) p^3(x_1, x_2, x_3)\\
+=& (1 - (1-x_1)(1-x_2) x_3)(1 - x_1(1-x_2)(1-x_3))(1 - x_1(1-x_2)(1-x_3))
+\end{align*}
+
+\end{proof}
+\end{mdframed}

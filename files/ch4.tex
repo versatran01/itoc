@@ -1,0 +1,312 @@
+\section{Decidability}
+
+\subsection{Decidable Languages}
+
+\subsubsection{Decidable Problems Concerning Regular Languages}
+
+\label{lang:ADFA_DCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.1}
+
+\medskip
+$A_\text{DFA}$ is a decidable language.
+\[
+A_\text{DFA} = \{\desc{B,w}\mid B \text{ is a DFA that accepts input string } w \}
+\]
+\end{shaded}
+
+The problem of testing whether a DFA $B$ accepts an input $w$ is the same as the problem of testing whether $\desc{B, w}$ is a member of the language $A_\text{DFA}$. Showing that the language is decidable is the same as showing the computational problem is decidable.
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM $M$ that decides $A_\text{DFA}$.
+
+\medskip
+$M$ = "On input $\desc{B, w}$, where $B$ is a DFA and $w$ is a string:
+\begin{enumerate}
+\item Simulate $B$ on input $w$.
+\item If the simulations ends in an accept state, \textit{accept}. If it ends in a nonaccepting state, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+When $M$ receives its input, $M$ first determines whether it properly represents a DFA $B$ and a string $w$. If not, $M$ rejects.
+
+\label{lang:ANFA_DCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.2}
+
+\medskip
+$A_\text{NFA}$ is a decidable language.
+\[
+A_\text{NFA} = \{\desc{B, w} \mid B \text{ is a NFA that accepts input string } w \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM $N$ that decides $A_\text{NFA}$.
+
+\medskip
+$N$ = "On input $\desc{B, w}$, where $B$ is an NFA and $w$ is a string:
+\begin{enumerate}
+\item Convert NFA $B$ to an equivalent DFA $C$, using the procedure for this conversion given in Theorem 1.39.
+\item Run TM $M$ from Theorem 4.1 on input $\desc{C, w}$.
+\item IF $M$ accepts, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:AREX_DCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.3}
+
+\medskip
+$A_\text{REX}$ is a decidable language.
+\[
+A_\text{REX} = \{\desc{R, w} \mid R \text{ is a regular expression that generates string } w \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM that decides $A_\text{REX}$.
+
+\medskip
+$N$ = On input $\desc{R, w}$, where $R$ is a regular expression and $w$ is a string:
+\begin{enumerate}
+\item Convert regular expression $R$ to an equivalent NFA $A$ by using the procedure given in Theorem 1.54.
+\item Run TM $N$ on input $\desc{A, w}$.
+\item IF $N$ accepts, \textit{accept}; if $N$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:EDFA_DCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.4}
+
+\medskip
+$E_\text{DFA}$ is a decidable language.
+\[
+E_\text{DFA} = \{\desc{A} \mid A \text{ is a DFA and } L(A) = \emptyset \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM $T$ that decides $E_\text{DFA}$ using a marking algorithm.
+
+\medskip
+$T$ = On input $\desc{A}$, where $A$ a DFA:
+\begin{enumerate}
+\item Mark the start state of $A$.
+\item Repeat until no new states get marked:
+\item $\quad$ Mark any state that has a transition coming into it from any state that is already marked.
+\item If no accept state is marked, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:EQDFA_DCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.5}
+
+\medskip
+$EQ_\text{DFA}$ is a decidable language.
+\[
+EQ_\text{DFA} = \{\desc{A, B} \mid A \text{ and } B \text{ are DFAs and } L(A) = L(B) \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Construct a new DFA $C$ from $A$ and $B$, where $C$ accepts only those strings that are accepted by either $A$ or $B$ but not both. Thus, if $A$ and $B$ recognize the same language, $C$ will accept nothing. The language of $C$ is 
+\[
+L(C) = \left( L(A) \cap \overline{L(B)} \right)\cup \left( \overline{L(A)} \cap L(B) \right)
+\]
+
+Then $L(C) = \emptyset$ iff $L(A) = L(B)$. Construct $C$ from $A$ and $B$ with the constructions for proving the class of regular languages closed under complementation, union, and intersection.
+
+\medskip
+$F$ = "On input $\desc{A,B}$, where $A$ and $B$ are DFAs:
+\begin{enumerate}
+\item Construct DFA $C$ as described.
+\item Run $E_\DFA$ decider $T$ on $\desc{C}$ to test whether $L(C) = \emptyset$.
+\item If $T$ accepts, \textit{accept}. If $T$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{Undecidability}
+
+\label{lang:ATM_TR}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.11}
+
+\medskip
+$A_\text{TM}$ is undecidable.
+\[
+A_\text{TM} = \{\desc{M, w} \mid M \text{ is a TM and $M$ accepts $w$} \}
+\]
+\end{shaded}
+
+$A_\text{TM}$ is Turing-recognizable. This theorem shows that recognizers are more powerful than deciders.
+
+Requiring a TM to halt on all inputs restricts the kinds of languages that it can recognize.
+
+The following Turing machine $U$ recognizes $A_\text{TM}$.
+
+\medskip
+$U$ = "On input $\desc{M, w}$, where $M$ is a TM and $w$ is a string:
+\begin{enumerate}
+\item Simulate $M$ on input $w$.
+\item If $M$ ever enters its accept state, \textit{accept}; if M ever enters its reject state, \textit{reject}.
+\end{enumerate}
+
+This machine loops on input $\desc{M, w}$ if $M$ loops on $w$, which is why this machine does not decide $A_\text{TM}$.
+
+$U$ is a \textbf{\textit{universal Turing machine}}.
+
+\subsubsection{The Diagonalization Method}
+
+\begin{shaded}
+\textbf{ITOC - Definition 4.14}
+
+\medskip
+A set $A$ is \textbf{countable} if either it is finite or it has the same size as $\mathbb{N}$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 4.17}
+
+\medskip
+$\mathbb{R}$ is uncountable.
+\end{shaded}
+
+In order to show that $\mathbb{R}$ is uncountable, we show that no correspondence exists between $\mathbb{N}$ and $\mathbb{R}$. Proof by contradiction. Suppose that a correspondence $f$ existed between $\mathbb{N}$ and $\mathbb{R}$, we show that $f$ fails to work as it should by finding an $x$ in $\mathbb{R}$ that is not paired with anything in $\mathbb{N}$.
+
+
+\begin{shaded}
+\textbf{ITOC - Corollary 4.18}
+
+\medskip
+Some languages are not Turing-recognizable.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+
+The set of all strings $\Sigma^*$ is countable for any alphabet $\Sigma$, which can be list in string order.
+
+The set of all Turing machines is countable because each Turing machine $M$ has an encoding into a string $\desc{M}$. Omit those strings that are not legal encodings of TMs, we can obtain a list of all TMs.
+
+The set of all \textbf{infinite binary sequences} is uncountable. Can be proved via diagonalization. Let $\mathcal{B}$ be the set of all infinite binary sequences.
+
+Let $\mathcal{L}$ be the set of all languages over alphabet $\Sigma$. We show that $\mathcal{L}$ is uncountable by giving a correspondence with $\mathcal{B}$. Each language $A \in \mathcal{L}$ has a unique sequence in $\mathcal{B}$, which is called the \textbf{characteristic sequence}. 
+
+The function $f:\mathcal{L}\rightarrow \mathcal{B}$, where $f(A)$ equals the characteristic sequence of $A$, is bijective. Therefore $\mathcal{L}$ is uncountable as $\mathcal{B}$.
+\end{proof}
+\end{mdframed}
+
+\subsubsection{An Undecidable Language}
+
+\label{lang:ATM_UDCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 4.11}
+
+\medskip
+$A_\text{TM}$ is undecidable.
+\[
+A_\text{TM} = \{\desc{M, w} \mid M \text{ is a TM and $M$ accepts $w$} \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Suppose that $H$ is a decider for $A_\text{TM}$.
+\[
+H(\desc{M, w}) = \begin{cases}
+accept \quad \text{if $M$ accepts $w$}\\
+reject \quad \text{if $M$ does not accept $w$}
+\end{cases}
+\]
+
+Construct a new TM $D$ with $H$ as a subroutine. $D$ calls $H$ to determine what $M$ does when the input to $M$ is $\desc{M}$ and it does the opposite.
+
+\medskip
+$D$ = On input $\desc{M}$, where $M$ is a TM:
+\begin{enumerate}
+\item Run $H$ on input $\desc{M, \desc{M}}$.
+\item Output the opposite of what $H$ outputs. If $H$ accepts, \textit{reject}; if $H$ rejects, \textit{accept}.
+\end{enumerate}
+
+\[
+D(\desc{M}) =\begin{cases}
+accept \quad \text{if $M$ does not accept $\desc{M}$} \\
+reject \quad \text{if $M$ accepts $\desc{M}$}
+\end{cases}
+\]
+
+Then we run $D$ with its own description $\desc{D}$.
+\[
+D(\desc{D}) = \begin{cases}
+accept \quad \text{if $D$ does not accept $\desc{D}$}\\
+reject \quad \text{if $D$ accepts $\desc{D}$}.
+\end{cases}
+\]
+\end{proof}
+\end{mdframed}
+
+Assume that a TM $H$ decides $A_\text{TM}$. Use $H$ to build a TM $D$ that takes an input $\desc{M}$, where $D$ accepts its input $\desc{M}$ exactly when $M$ does not accept its input $\desc{M}$. Finally, run $D$ on itself.
+\begin{itemize}
+\item $H$ accepts $\desc{M, w}$ exactly when $M$ accepts $w$.
+\item $D$ rejects $\desc{M}$ exactly when $M$ accepts $\desc{M}$.
+\item $D$ rejects $\desc{D}$ exactly when $D$ accepts $\desc{D}$.
+\end{itemize}
+
+This is analogous to a formal diagonalization argument: Construct the matrix $T(i,j)$, where the value at $(i, j)$ is the result of $H(\desc{M_i, \desc{M_j}})$. A machine $D$ can be constructed where a contradiction arises on the element along the diagonal where $D$ is run on input $\desc{D}$.
+
+\subsubsection{A Turing-unrecognizable language}
+
+A language is \textbf{co-Turing-recognizable} if it is the complement of a Turing-recognizable language.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 4.22}
+
+\medskip
+A language is decidable iff it is Turing-recognizable and co-Turing-recognizable.
+\end{shaded}
+
+{\color{blue} A language is decidable exactly when both it and its complement are Turing-recognizable.}
+
+\begin{mdframed}
+\begin{proof}
+First, if $A$ is decidable, then $\overline{A}$ is decidable. Since any decidable language is Turing-recognizable, then both $A$ and its complement $\overline{A}$ are Turing-recognizable.
+
+For the other direction, if both $A$ and $\overline{A}$ are Turing-recognizable, let $M_1$ and $M_2$ be the recognizers for $A$ and $\overline{A}$. Construct a TM $M$ that decides $A$.
+
+\medskip
+$M$ = On input $W$:
+\begin{enumerate}
+\item Run both $M_1$ and $M_2$ on $w$ in parallel.
+\item If $M_1$ accepts, \textit{accept}; if $M_2$ accepts, \textit{reject}.
+\end{enumerate}
+
+Every string $w$ is either in $A$ or $\overline{A}$. Therefore, either $M_1$ or $M_2$ must accept $w$. Because $M$ halts whenever $M_1$ or $M_2$ accepts, $M$ always halts and so is a decider. IT accepts all strings in $A$ and rejects all strings not in $A$. So $M$ is a decider for $A$ and $A$ is decidable.
+\end{proof}
+\end{mdframed}
+
+\label{lang:ATMC_NTR}
+\begin{shaded}
+\textbf{ITOC - Corollary 4.23}
+
+\medskip
+$\overline{A_\text{TM}}$ is not Turing-recognizable.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+$A_\text{TM}$ is Turing-recognizable. If $\overline{A_\text{TM}}$ were Turing-recognizable, $A_\text{TM}$ would be decidable, a contradiction.
+\end{proof}
+\end{mdframed}

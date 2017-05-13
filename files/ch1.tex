@@ -1,0 +1,502 @@
+\section{Regular Languages}
+
+\subsection{Finite Automata}
+
+\textbf{Finite state machine (FSM)} is a computation model with limited and constant memory. 
+{\color{blue} constant memory means its size is independent of input length}
+
+\textbf{Markov chains} are probabilistic counterparts of finite automata.
+
+\subsubsection{Formal Definition of a Finite Automaton}
+
+\begin{shaded}
+\textbf{ITOC - Definition 1.5 - Finite Automaton}
+
+\medskip
+A \textbf{finite automaton} is a 5-tuple $(Q, \Sigma, \delta, q_0, F)$, where
+\begin{enumerate}
+\item $Q$ is a finite set called the \textbf{states},
+\item $\Sigma$ is a finite set called the \textbf{alphabet},
+\item $\mapdef{\delta}{Q \times \Sigma}{Q}$ is the \textbf{transition function},
+\item $q_0 \in Q$ is the \textbf{start state},
+\item $F \subseteq Q$ is the \textbf{set of accept states}.
+\end{enumerate}
+\end{shaded}
+
+Some properties:
+\begin{itemize}
+\item 0 accept states is possible with $F = \emptyset$.
+\item exactly 1 transition arrow exits every state for each possible input symbol.
+\end{itemize}
+
+If $A$ is the set of all strings that machine $M$ accepts, then $A$ is the
+language of machine $M$ and write $L(M) = A$.
+
+We say that a machine \textbf{recognizes} a language and \textbf{accepts} a string.
+
+
+{\color{blue} A machine may accept several strings, but it always recognizes only one language.
+
+If a machine accepts no strings, then it recognizes the empty language $\emptyset$.}
+
+\subsubsection{Formal Definition of Computation}
+
+\begin{shaded}
+\textbf{ITOC - Computation for a DFA}
+
+\medskip
+Let $M = (Q, \Sigma, \delta, q_0, F)$ be a finite automaton and let $w = w_1 w_2 \cdots w_n$ be a string where $w_i \in \Sigma$, for $i = 1, 2, \ldots n$. 
+
+$M$ \textbf{accepts} $w$, if a sequence of states $r_0, r_1, \ldots, r_n$ in $Q$ exists with 3 conditions:
+\begin{enumerate}
+\item $r_0 = q_0$
+\item $\delta(r_i, w_{i+1}) = r_{i+1}$, for $i = 1, 2, \ldots, n-1$, and
+\item $r_n \in F$ 
+\end{enumerate}
+\end{shaded}
+
+$M$ \textbf{recognizes} language $A$ if $A = \{w \mid M \text{ accepts } w\}$.
+
+\begin{shaded}
+\textbf{ITOC - Definition 1.16 - Regular Language}
+
+\medskip
+A language is called a \textbf{regular language} if some finite automaton recognizes it.
+\end{shaded}
+
+What languages are not regular? {\color{blue} Anything that requires memory.}
+\begin{itemize}
+\item cannot store the string,
+\item cannot count.
+\end{itemize}
+
+\subsubsection{The Regular Operations}
+
+\begin{shaded}
+\textbf{ITOC - Definition 1.23 - Regular Operations}
+
+\medskip
+Let $A$ and $B$ be languages. We define the regular operations \textbf{union}, \textbf{concatenation}, and \textbf{star} as follows:
+\begin{itemize}
+\item Union: $A \cup B = \{x \mid x \in A \vee x \in B\}$.
+\item Concatenation: $A\circ B = \{ xy \mid  x \in A \wedge y \in B \}$.
+\item Star: $A^* = \{ x_1 x_2 \ldots x_k \mid k \geq 0, \forall x_i \in A\}$.
+\end{itemize}
+\end{shaded}
+
+The empty string $\epsilon$ is always a member of $A^*$, no matter what $A$ is.
+
+{\color{blue}  The collection of regular languages is closed under all three of the regular operations.}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 1.25}
+
+\medskip
+The class of regular languages is closed under the union operation.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Proof by construction. 
+
+Assume
+$A_1 = L(M_1), A_2 = L(M_2)$,
+then build $M$ to recognize $L_1 \cup L_2$. Simulate $M_1$ and $M_2$ simultaneously, each state in $M$ corresponds to two states, one in $M_1$ and one in $M_2$.
+
+Let $M_1$ recognize $A_1$, where $M_1 = (Q_1, \Sigma, \delta_1, q_1, F_1)$.
+
+Let $M_2$ recognize $A_2$, where $M_2 = (Q_2, \Sigma, \delta_2, q_2, F_2)$.
+
+Construct $M$ to recognize $A_1 \cup A_2$, where $M = (Q, \Sigma, \delta, q_0, F)$.
+\begin{enumerate}
+\item $Q  = Q_1 \times Q_2 = \{ (r_1, r_2) \mid r_1 \in Q_1 \wedge r_2 \in Q_2\}$,
+\item $\Sigma$ is the same as $\Sigma$ in $M_1$ and $M_2$,
+\item $\delta((r_1, r_2), a) = (\delta_1(r_1, a), \delta_2(r_2, a))$,
+\item $q_0 = (q_1, q_2)$,
+\item $F = (F_1 \times Q_2 ) \cup (Q_1 \times F_2) = \{(r_1, r_2) \mid r_1 \in F_1 \vee r_2 \in F_2 \}$.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{Nondeterminism}
+
+In a \textbf{nondeterministic} machine, several choices may exist for the next state at any point.
+
+{\color{blue} Nondeterminism is a \textbf{generalization} of determinism.} Every DFA is an NFA.
+
+\medskip
+Difference between DFA and NFA:
+\begin{enumerate}
+\item Every state of a DFA always has exactly one exiting transition arrow for each symbol in the alphabet. In an NFA, a state may have zero, one, or many exiting arrows for each alphabet symbol.
+\item In a DFA, labels on the transition arrows are symbols from the alphabet. This NFA has an arrow with the label $\epsilon$.
+\end{enumerate}
+
+If any one of these copies of the machine is in an accept state at the end of the input, the NFA accepts the input string.
+
+\subsubsection{Formal Definition of a Nondeterministic Finite Automaton}
+
+NFA and DFA differ in one essential way: in the type of transition function. In an NFA, the transition function takes a state and an input symbol or the empty string and produces \textit{the set of possible next states}.
+
+\begin{shaded}
+\textbf{ITOC - Definition 1.37 - Nondeterministic Finite Automaton}
+
+\medskip
+A \textbf{nondeterministic finite automaton} is a 5-tuple $(Q, \Sigma, \delta, q_0, F)$, where
+\begin{enumerate}
+\item $Q$ is a finite set of states,
+\item $\Sigma$ is a finite alphabet,
+\item $\mapdef{\delta}{Q \times \Sigma_\epsilon}{\mathcal{P}(Q)}$ is the transition function,
+\item $q_0 \in Q$ is the start state,
+\item $F \subseteq Q$ is the set of accept states.
+\end{enumerate}
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Computation for an NFA}
+
+\medskip
+Let $N = (Q, \Sigma, \delta, q_0, F)$ be an NFA and let $w = y_1 y_2 \cdots y_n$ be a string where $y_i \in \Sigma_\epsilon$, for $i = 1, 2, \ldots n$. 
+
+$N$ \textbf{accepts} $w$, if a sequence of states $r_0, r_1, \ldots, r_n$ in $Q$ exists with 3 conditions:
+\begin{enumerate}
+\item $r_0 = q_0$
+\item $r_{i+1} \in \delta(r_i, w_{i+1})$, for $i = 1, 2, \ldots, n-1$, and
+\item $r_n \in F$ 
+\end{enumerate}
+\end{shaded}
+
+\subsubsection{Equivalence of NFAs and DFAs}
+
+NFAs and DFAs recognize the same class of languages, which is the class of regular languages.
+
+Two machines are \textbf{equivalent} if they recognize the same language.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 1.39}
+
+\medskip
+Every NFA has an equivalent DFA.
+\end{shaded}
+
+If $k$ is the number of states of the NFA, then the DFA simulating the NFA will have $2^k$ states.
+
+{\color{blue} Define $E(R)$ to be the collection of states that can be reached from members of $R$ by going only along $\epsilon$ arrows, including members of $R$.
+\[
+E(R) = \{q \mid q \text{ can be reached from $R$ by traveling along 0 or more $\epsilon$ arrows}\}
+\]}
+\begin{mdframed}
+\begin{proof}
+Proof by construction.
+
+Let $N = (Q, \Sigma, \delta, q_0, F)$ be some NFA that recognizes $A$. 
+
+Construct $M = (Q', \Sigma, \delta', q_0', F')$ that also recognizes $A$.
+
+\begin{enumerate}
+\item $Q' = \mathcal{P}(Q)$,
+
+\item $\delta'(R, a) = \{q \in Q \mid q \in \delta(r, a) \text{ for some } r \in R \}
+= \bigcup_{r \in R} \delta(r, a)$
+
+$\delta'(R, a) = \{q \in Q \mid q \in E(\delta(r, a)) \text{ for some } r \in R \}
+=\bigcup_{r \in R} E(\delta(r, a))$
+
+\item $q_0' = \{q_0\}$ 
+
+$q_0' =  E(\{q_0 \})$
+
+\item $F' = \{R \in Q' \mid R \text{ contains an accept state of } N\} = \{R \in Q' \mid R \cap \bigcup_{f\in F} E(f) \neq \emptyset \}$.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+{\color{blue} We follow the $\epsilon$ arrows after each input symbol is read. An alternative procedure based on following the $\epsilon$ arrows before reading each input symbol works equally well.}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 1.40}
+
+\medskip
+A language is regular if and only if some NFA recognizes it.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+NFA recognizes a language $\Rightarrow$ there is a DFA that also recognizes the language $\Rightarrow$ the language is regular.
+
+A language is a regular $\Rightarrow$ there is a DFA that recognizes it $\Rightarrow$ DFA is a special case of NFA $\Rightarrow$ the language is recognized by an NFA.
+\end{proof}
+\end{mdframed}
+
+When constructing a DFA from an NFA, if no arrows point at some states, they can be removed without affecting the performance of the machine.
+
+\subsubsection{Closure under the Regular Operations}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 1.45}
+
+\medskip
+The class of regular languages is closed under the union operation.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+NFA $N_1$ recognizes $A_1$, NFA $N_2$ recognizes $A_2$, build $N$ to recognize $A_1 \cup A_2$.
+
+$N_1 = (Q_1, \Sigma, \delta_1, q_1, F_1 ), N_2 = (Q_2, \Sigma, \delta_2, q_2, F_2) \rightarrow N = (Q, \Sigma, \delta, q_0, F)$.
+\begin{enumerate}
+\item $Q = 	Q_1 \cup Q_2 \cup \{q_0\}$, add an additional new start state $q_0$.
+
+\item $q_0$ is the start state of $N$.
+
+\item $F = F_1 \cup F_2$.
+
+\item 
+\[
+\delta(q, a) = \begin{cases}
+\delta_1(q, a) 	&q \in Q_1 \\
+\delta_1(q, a) 	&q \in Q_2 \\
+\{q_1, q_2\}	&q = q_0, a = \epsilon \\
+\emptyset 		 \&q = q_0, a \neq \epsilon
+\end{cases}
+\]
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 1.47}
+
+\medskip
+The class of regular languages is closed under the concatenation operation.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Proof by construction.
+
+$N_1 = (Q_1, \Sigma, \delta_1, q_1, F_1 ), N_2 = (Q_2, \Sigma, \delta_2, q_2, F_2) \rightarrow N = (Q, \Sigma, \delta, q_1, F_2)$.
+
+\begin{enumerate}
+\item $Q = Q_1 \cup Q_2$.
+\item $q_1$ is the start state of $N_1$.
+\item Accept states $F$ are the same as $N_2$, $F=F_2$.
+\item 
+\[
+\delta(q, a) = \begin{cases}
+\delta_1(q, a) 	&q \in Q_1, q \not \in F_1\\
+\delta_1(q, a) 	&q \in F_1, a \neq \epsilon \\
+\delta_1(q, a) \cup \{q_2\}	&q \in F_1, a = \epsilon \\
+\delta_2(q, a)    & q \in Q_2
+\end{cases}
+\]
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{Theorem 1.49}
+
+\medskip
+The class of regular languages is closed under the star operation.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Proof by construction.
+
+$N_1 = (Q_1, \Sigma, \delta_1, q_1, F_1 ) \rightarrow N = (Q, \Sigma, \delta, q_0, F)$.
+
+\begin{enumerate}
+\item $Q = Q_1 \cup \{q_0\}$.
+
+\item $q_0$ is the new start state.
+
+\item $F = F_1 \cup \{q_0\}$.
+
+\item 
+\[
+\delta(q, a) = \begin{cases}
+\delta_1(q, a) 	  			    &q \in Q_1, q \not \in F_1\\
+\delta_1(q, a)					&q \in F_1, a \neq \epsilon\\
+\delta_1(q, a) \cup \{q_1\} 	&q \in F_1, a = \epsilon \\
+\{q_1\}					   		&q = q_0, a = \epsilon \\
+\emptyset    					&q = q_0, a \neq \epsilon
+\end{cases}
+\]
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+Important closures:
+\begin{enumerate}
+\item Set theoretic: Union $A\cup B$, Intersection $A\cap B$, Complement $\overline{A}$, Relative complement $B - A$.
+\item Regular operations: Union $A\cup B$, Concatenation $A\circ B$, Kleene Star $A^*$
+\item Reverse: $A^R$
+\begin{enumerate}
+\item Reverse all the arcs in the transition diagram for $A$.
+\item Make the start state of $A$ the only accepting state for the new automaton.
+\item Make the accepting states of $A$ regular states.
+\item Create a new start state $p_0$ with $\epsilon$-transitions to all the formal accepting states of $A$.
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Regular Expression}
+
+\subsubsection{ Formal Definition of a Regular Expression}
+
+The value of a regular expression is a language.
+
+If $\Sigma$ is an alphabet, the regular expression $\Sigma$ describes the language consisting of all strings of length 1 over this alphabet. $\Sigma^*$ describes the language consisting of all strings over that alphabet.
+
+\begin{shaded}
+\textbf{ITOC - Definition 1.52}
+
+\medskip
+$R$ is a \textbf{regular expression} if $R$ is
+\begin{enumerate}
+\item $a$ fro some $a \in \Sigma$, (language $\{a\}$)
+\item $\epsilon$, (language $\{\epsilon\}$)
+\item $\emptyset$, (language $\emptyset$)
+\item $(R_1 \cup R_2)$, where $R_1$ and $R_2$ are regex,
+\item $(R_1 \circ R_2)$, where $R_1$ and $R_2$ are regex,
+\item $(R_1^*)$, where $R_1$ is a regex.
+\end{enumerate}
+\end{shaded}
+
+If $\Sigma$ is an alphabet, the regular expression $\Sigma$ describes the language consisting of all strings of length 1 over this alphabet, and $\Sigma^*$ describes the language consisting of all strings over that alphabet.
+
+{\color{blue} The expression $\epsilon$  represents the language containing a single string, whereas $\emptyset$ represents the language that doesn't contain nay strings.}
+
+$R^+ = RR^*$, $R^+ \cup \epsilon = R^*$. 
+
+$L(R)$ is the language of $R$.
+
+\medskip
+Some examples:
+\begin{itemize}
+\item $1^*\emptyset = \emptyset$.
+
+Concatenating the empty set to any set yields the empty set.
+
+\item $\emptyset^* = \{\epsilon\}$. 
+
+If the language is empty, the star operation can put together 0 strings, giving only the empty string.
+\end{itemize}
+
+Let R be any regular expression
+\begin{enumerate}
+\item $R\cup \emptyset = R$. 
+
+Adding the empty language to any other language will not change it.
+
+\item $R\circ \epsilon = R$
+
+Joining the empty string to any string will not change it.
+
+\item $R\cup \epsilon$ may not equal $R$.
+
+\item $R\circ \emptyset$ may not equal $R$/, $R\circ \emptyset = \emptyset$.
+\end{enumerate}
+
+\subsubsection{Equivalence with Finite Automata}
+
+Regular expressions and finite automata are equivalent in their descriptive power. A regular language is one that is recognized by some finite automata
+
+\begin{shaded}
+\textbf{ITOC - Theorem 1.54}
+
+\medskip
+A language is regular if and only if some regular expression describes it.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Lemma 1.55}
+
+\medskip
+If a language is described by a regular expression, then it is regular.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Say that a regular expression R describing some language $A$. Show how to convert $R$ into an $NFA$ recognizing $A$. Then if  an NFA recognizes $A$ then $A$ is regular.
+
+For the first 3 cases, 
+\begin{enumerate}
+\item $R=a$ for some $a \in \Sigma$
+
+$N = (\{q_1, q_2\}, \Sigma, \delta, q_1, \{q_2\})$
+
+$\delta(q_1, a) = \{q_2\}$ and $\delta(r, b) = \emptyset$ for $r\neq q_1$ or $b \neq a$.
+
+\item $R = \epsilon$, $L(R) = \{\epsilon\}$
+
+$N = (\{q_1\}, \Sigma, \delta, q_1, \{q_1\})$
+
+$\delta(r, b) = \emptyset$ for any $r$ and $b$
+
+\item $R = \emptyset$, $L(R) = \emptyset$
+
+$N = (\{q_1\}, \Sigma, \delta, q_1, \emptyset)$
+
+$\delta(r, b) = \emptyset$ for any $r$ and $b$
+\end{enumerate}
+
+For the last three cases, use the construction given in the proofs that the class of regular languages is closed under the regular operations.
+\end{proof}
+\end{mdframed}
+
+\subsection{Non-regular Languages}
+
+\subsubsection{The Pumping Lemma for Regular Languages}
+
+All strings in the language can be "pumped" if they are at least as long as a certain special value, called the \textbf{pumping length}.
+
+Such string contains a section that can be repeated any number of times with the resulting string remaining in the language.
+
+\begin{shaded}
+\textbf{Theorem 1.70}
+
+\medskip
+If $A$ is a regular language, then there is a number $p$ where if $s \in A$, $|s| \geq p$, then $s = xyz$, satisfying the following conditions:
+\begin{enumerate}
+\item $\forall i \geq 0, x y^i z \in A$.
+\item $|y| > 0$.
+\item $|xy| \leq p$.
+\end{enumerate}
+\end{shaded}
+
+{\color{blue} Either $x$ or $z$ may be $\epsilon$, but $y \neq \epsilon$.}
+
+Intuitive explanation: We can always a nonempty string $y$ not too far from the beginning of $w$ that can be pumped; that is, repeating $y$ any number of times, or deleting it (the case $i = 0$), keeps the resulting string in the language $L$.
+
+By the pigeonhole principle, the first $p+1$ states in the sequence must contain a repetition. Therefore $|xy| \leq p$.
+
+\begin{mdframed}
+\begin{proof}
+Construct a DFA $M = (Q, \Sigma, \delta, q_1, F)$ that recognizes $A$. Let number of states of $M$ to be $p$.
+
+Let string $s = s_1\ldots s_n \in A$, with $|s| = n \geq p$.
+
+The sequence of states that $M$ goes through when computing $s$ has length $n+1$. $r_{i+1} = \delta(r_i ,s_i)$, for $1 \leq i \leq n$.
+
+This sequence $r_1\cdots r_{n+1}$ has length $n+1 \geq p+1$. But $M$ only has $p$ states. Thus, the first $p+1$ elements in the sequence must have a repeated state (pigeonhole principle). 
+
+{\color{blue} When we have $p+1$ states, we have $p$ symbols, so $|xy|\leq p$.}
+
+Let the first repeat state $r_j$ and the second $r_l$, and $r_l$ occurs among the first $p+1$ of the state sequence ($r_1\cdots r_n$), we have $l \leq p+1$.
+
+Let $x = s_1 \cdots s_{j-1}$, $y = s_j \cdots s_{l-1}$ and $z = s_l\cdots s_n$.
+
+$M$ must accept $xy^iz$ (condition 1). Since $j \neq l$, $|y| > 0$ (condition 2). $l \leq p+1$, so $|xy| \leq p$ (condition 3).
+\end{proof}
+\end{mdframed}
+
+How to use pumping lemma to prove that a language is not regular.
+\begin{enumerate}
+\item Assume that $B$ is regular
+\item Use pumping lemma to guarantee the existence of pumping length $p$, such that all strings with length at least $p$ can be pumped.
+\item Find a string $s$ in $B$ that has length $p$ or greater but cannot be pumped.
+\item Demonstrate that $s$ cannot be pumped by considering all ways of dividing $s$ into $x$, $y$, and $z$.
+\item For each such division, find a value $i$ where $xy^iz \not \in B$.
+\item Contradiction.
+\end{enumerate}

@@ -1,0 +1,115 @@
+\section{The Church-Turing Thesis}
+
+\subsection{Turing Machines}
+
+\textbf{Turning Machine} is similar to a finite automaton but with an unlimited and unrestricted memory.
+
+A Turing machine can do everything that a real computer can do.
+
+Initially the tape contains only the input string and is black everywhere else. The outputs accept and reject are obtained by entering designated accepting and rejecting states. If it doesn't enter an accepting or a rejecting state, it will go on forever, never halting.
+
+Differences between finite automata and Turing machines:
+\begin{enumerate}
+\item A TM can both write on the tape and read from it.
+\item The read-write head can move both to the left and to the right.
+\item The tape is infinite.
+\item The special state for rejecting and accepting take effect immediately
+\end{enumerate}
+
+\subsection{Formal Definition of a Turing Machine}
+
+\begin{shaded}
+\textbf{Definition 3.3}
+
+\medskip
+A \textbf{Turing machine} is a 7-tuple $(Q, \Sigma, \Gamma, \delta, q_0, q_\text{accept}, q_\text{reject})$
+
+\begin{enumerate}
+\item $Q$ is the set of states,
+\item $\Sigma$ is the input alphabet, $\sqcup \not \in \Sigma$,
+\item $\Gamma$ is the tape alphabet, $\sqcup \in \Gamma$, $\Sigma \subset \Gamma$,
+\item $\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{\text{L, R}\}$,
+\item $q_0$ is the start state,
+\item $q_\text{accept}$ is the accept state,
+\item $q_\text{reject}$ is the reject state, $q_\text{accept} \neq q_\text{reject}$.
+\end{enumerate}
+\end{shaded}
+
+Computation of a Turing machine
+\begin{enumerate}
+\item $M$ receives input $w = w_1\cdots w_n \in \Sigma^*$ on the leftmost $n$ squares of the tape and the rest of the tape is blank.
+\item If $M$ ever tries to move to the left off the left-hand end of the tape, the head stays in the same place for that move.
+\item Computation halts when it enters either accept or reject state. If neither occurs, $M$ loops forever.
+\end{enumerate}
+
+A \textbf{configuration} of the TM consists of the current state, the current tape content, and the current head location.
+
+Configuration $C_1$ \textbf{yields} configuration $C_2$ if the TM can legally go from $C_1$ to $C_2$ in a single step.
+
+The \textbf{start configuration} of $M$ on input $w$ is the configuration $q_0w$.
+
+\textbf{Accepting and rejecting configurations} are \textbf{halting configurations} and do not yield further configurations.
+
+\begin{shaded}
+\textbf{ITOC - Computation of Turing Machine}
+
+\medskip
+A Turing machine $M$ \textbf{accepts} input $w$ if a sequence of configurations $C_1, C_2, \ldots, C_k$ exists, where
+\begin{enumerate}
+\item $C_1$ is the start configuration of $M$ on input $w$,
+\item each $C_i$ yields $C_{i+1}$, and 
+\item $C_k$ is an accepting configuration
+\end{enumerate}
+\end{shaded}
+
+The collection of strings that $M$ accepts is \textbf{the language of $M$}, or \textbf{the language recognized by $M$}, denoted $L(M)$.
+
+\begin{shaded}
+\textbf{ITOC - Definition 3.5}
+
+\medskip
+Call a language \textbf{Turing-recognizable} if some Turing machine recognizes it.
+\end{shaded}
+
+When we start a Turing machine on an input, 3 outcomes are possible. The machine may \textit{accept}, \textit{reject} or \textit{loop}.
+
+A Turing machine $M$ can fail to accept an input by entering the $q_\text{reject}$ state and rejecting, or by looping.
+
+Turning machines that halt on all inputs are called \textbf{deciders} because they always make a decision to accept or reject. A deiceder that recognizes some language also is said to \textbf{decide} that language.
+
+\begin{shaded}
+\textbf{ITOC - Definition 3.6}
+
+\medskip
+Call a language \textbf{Turing-decidable} or simply \textbf{decidable} if some Turing machine decides it.
+\end{shaded}
+
+{\color{blue} Every decidable language is Turing-recognizable.}
+
+\subsubsection{Variants of Turing Machines}
+
+The original model and its reasonable variants all have the same power - they recognize the same class of languages.
+
+\medskip
+\textbf{Multitape Turing Machines}
+
+A \textbf{multitape Turing machine} is like an ordinary Turing machine with several tapes.
+
+Initially the input appears on tape 1, and the others start out blank.
+
+Transition function: $\delta: Q \times \Gamma^k \rightarrow Q \times \Gamma^k \times \{\text{L, R, S}\}^k$
+
+\begin{shaded}
+\textbf{IOTC - Theorem 3.13}
+
+\medskip
+Every multitape Turing machine has an equivalent single-tape Turing machine.
+\end{shaded}
+
+\subsubsection{The Definition of Algorithm}
+
+The input to a Turing machine is always a string. If we want to provide an object other than a string as input, we must first represent that object as a string.
+
+We indicate the block structure of the algorithm with further indentation. The first line of the algorithm describes the input to the machine.
+
+A graph is \textbf{connected} if every node can be reached from every other node by traveling along the edges of the graph.

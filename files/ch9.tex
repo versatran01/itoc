@@ -1,0 +1,106 @@
+\section{Intractability}
+
+\subsection{Hierarchy Theorems}
+
+\begin{shaded}
+\textbf{ITOC - Definition 9.1}
+
+\medskip
+A function $f : \mathbb{N} \rightarrow \mathbb{N}$, where $f(n)$ is at least $O(\log n)$, is called \textbf{space constructible} if the function that maps the string $1^n$ to the binary representation of $f(n)$ is computable in space $O(f(n))$.
+\end{shaded}
+
+$f$ is space constructible if some $O(f(n))$ space TM exists that always halts with the binary representation of $f(n)$ on its tape when started on input $1^n$.
+
+{\color{blue} All commonly occurring functions that are at least $O(\log n)$ are space constructible, including the functions $\log_2 n, n \log2_n, n^2$.}
+
+If $f(n)$ and $g(n)$ are two space bounds, where $f(n)$ is asymptotically larger than $g(n)$, we would expect a machine to be able to decide more languages in $f(n)$ space than in $g(n)$ space.
+
+\label{theo:9.3}
+\begin{shaded}
+\textbf{ITOC - Theorem 9.3}
+
+\medskip
+\textbf{Space hierarchy theorem} - For any space constructible function $f:\mathbb{N} \rightarrow \mathbb{N}$, a language $A$ exists that is decidable in $O(f(n))$ space but not in $o(f(n))$ space.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 9.4}
+
+\medskip
+For any two functions $f_1, f_2: \mathbb{N} \rightarrow \mathbb{N}$, where $f_1(n)$ is $o(f_2(n))$ and $f_2$ is space constructible, $\SPACE(f_1(n)) \subset \SPACE(f_2(n))^2$
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 9.5}
+
+\medskip
+For any two real numbers $0 \leq \epsilon_1 < \epsilon_2$, $\SPACE(n^{\epsilon_1}) \subset \SPACE(n^{\epsilon_2})$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 9.6}
+
+\medskip
+$\NL \subset \PSPACE$.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Savitch's theorem shows that $\NL \subseteq \SPACE(\log^2 n)$, and the space hierarchy theorem show that $\SPACE(\log^2 n) \subset \SPACE(n)$. Hence, $\NL \subset \PSPACE$.
+\end{proof}
+\end{mdframed}
+
+{\color{blue} $\SPACE(n^k) \subset \SPACE(n^{\log_n}) \subset \SPACE(2^n)$}
+
+\begin{shaded}
+\textbf{ITOC- Corollary 9.7}
+
+\medskip
+$\PSPACE \subset \EXPSPACE$. 
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Definition 9.8}
+
+\medskip
+A function $t: \mathbb{N} \rightarrow \mathbb{N}$, where $t(n)$ is at least $O(n \log n)$, is called \textbf{time constructible} if the function that maps the string $1^n$ to the binary representation of $t(n)$ is computable in time $O(t(n))$.
+\end{shaded}
+
+$t$ is time constructible if some $O(t(n))$ time TM exists that always halts with the binary representation of $t(n)$ on its tape when started on input $1^n$.
+
+{\color{blue} All commonly occurring functions that are at least $n\log n$ are time constructible, including the functions $n\log n, n\sqrt{n}, n^2, 2^n$.}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 9.10}
+
+\medskip
+\textbf{Time hierarchy theorem} - For any time constructible function $t: \mathbb{N} \rightarrow \mathbb{N}$, a language $A$ exists that is decidable in $O(t(n))$ time but not decidable in time $o(t(n) / \log t(n))$.
+\end{shaded}
+
+
+\begin{shaded}
+\textbf{ITOC - COROLLARY 9.11}
+
+\medskip
+For any two functions $t_1, t_2: \mathbb{N} \rightarrow \mathbb{N}$, where $t_1(n)$ is $o(t_2(n) / \log t_2(n))$ and $t_2$ is time constructible, $\TIME(t_1(n)) \subset \TIME (t_2(n))$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - COROLLARY 9.12}
+
+\medskip
+For any two real numbers $1 \leq \epsilon_1 < \epsilon_2$, we have $\TIME(n^{\epsilon_1}) \subset \TIME(n^{\epsilon_2})$.
+\end{shaded}
+
+\subsubsection{Exponential Space Completeness}
+
+\begin{shaded}
+\textbf{ITOC - Definition 9.14}
+
+\medskip
+A language $B$ is \textbf{EXPSPACE-complete} if
+\begin{enumerate}
+\item $B \in \EXPSPACE$, and
+\item $\forall A \in \EXPSPACE$, $A \leq_\P B$.
+\end{enumerate}
+\end{shaded}

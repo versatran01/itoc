@@ -1,0 +1,607 @@
+\subsection{Exercises}
+
+\textbf{7.1}
+\textbf{a.} $2n = O(n)$.
+\begin{mdframed}
+True. $c = 2$.
+\end{mdframed}
+
+\textbf{b.} $n^2 = O(n)$
+\begin{mdframed}
+False. 
+\end{mdframed}
+
+\textbf{c.} $n^2 = O(n \log^2 n)$
+\begin{mdframed}
+False. 
+\end{mdframed}
+
+\textbf{d.} $n \log n = O(n^2)$
+\begin{mdframed}
+True. Since $\log n = O(n)$, $n \log n = n O(n) = O(n^2)$.
+\end{mdframed}
+
+\textbf{e.} $3^n = 2^{O(n)}$
+\begin{mdframed}
+True. $3^n = 2^{n \log_2 3} = 2^{O(n)}$.
+\end{mdframed}
+
+\textbf{f.} $2^{2^n} = O(2^{2^n})$
+\begin{mdframed}
+True. $f(n) = O(f(n))$.
+\end{mdframed}
+
+\textbf{7.2} 
+\textbf{a.} $n = o(2n)$
+\begin{mdframed}
+False. $\lim_{n\rightarrow\infty} \frac{n}{2n} = 0.5$.
+\end{mdframed}
+
+\textbf{b.} $2n = O(n^2)$
+\begin{mdframed}
+True. $\lim_{n\rightarrow\infty} \frac{2n}{n^2} = 0$.
+\end{mdframed}
+
+\textbf{c.} $2^n = o(3^n)$
+\begin{mdframed}
+True.
+\[
+\lim_{n\rightarrow \infty} \frac{2^n}{3^n} = \lim_{n\rightarrow \infty} \left(\frac{2}{3}\right)^n = 0
+\]
+\end{mdframed}
+
+\textbf{d.} $1 = o(n)$
+\begin{mdframed}
+True.
+\end{mdframed}
+
+\textbf{e.} $n = o(\log n)$
+\begin{mdframed}
+False.  $\lim_{n\rightarrow\infty} \frac{n}{\log n} = \infty$.
+\end{mdframed}
+
+\textbf{f.} $1 = o(1 / n)$
+\begin{mdframed}
+False.  $\lim_{n\rightarrow\infty} \frac{1}{1/n} = \infty$.
+\end{mdframed}
+
+\textbf{7.6} Show that P is closed under union, concatenation, and complement.
+\label{exe:P_CLOSURE}
+
+\begin{mdframed}
+Let $M_1$ decides $L_1$ and $M_2$ decides $L_2$ in polynomial time.
+\end{mdframed}
+
+\textbf{a.} union
+\begin{mdframed}
+\begin{proof}
+$M'$ decides $L_1 \cup L_2$ in poly time.
+
+\medskip
+$M'$ = On input $\desc{w}$:
+\begin{enumerate}
+\item Run $M_1$ on $w$. If it accepts, \textit{accept}.
+\item Run $M_2$ on $w$. If it accepts, \textit{accept}. If it rejects, \textit{reject}.
+\end{enumerate}
+
+$M'$ accepts $w$ iff either $M_1$ or $M_2$ accepts $w$. Since both are deciders, $M'$ is also a decider and decides $L_1 \cup L_2$. Since both $M_1$ and $M_2$ run in polynomial time, $M'$ runs in polynomial time.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Concatenation
+
+\begin{mdframed}
+\begin{proof}
+$M'$ decides $L_1 \circ L_2$ in polynomial time.
+
+\medskip
+$M'$ = On input $w$:
+\begin{enumerate}
+\item For each possible way, split $w$ into two substring $w_1$ and $w_2$.
+\item $\quad$ Run $M_1$ on $w_1$ and $M_2$ on $w_2$. If both accept, \textit{accept}.
+\item If $w$ is not accepted after trying all possible splits, \textit{reject}.
+\end{enumerate}
+
+$M'$ accepts $w$ iff $w = w_1 w_2$ such that $M_1$ accepts $w_1$ and $M_2$ accepts $w_2$. Therefore, $M'$ decides $L_1L_2$. Since step 2 runs in polynomial time and is repeated at most $n$ times, $M'$ runs in polynomial time.
+\end{proof}
+\end{mdframed}
+
+\textbf{c.} Complement
+
+\begin{mdframed}
+\begin{proof}
+$M'$ decides $\overline{L}$ in polynomial time.
+
+\medskip
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Run $M$ on $w$ and output the opposite of whatever $M$ outputs.
+\end{enumerate}
+
+$M'$ decides $\overline{L}$. Since $M$ runs in polynomial time, $M'$ also runs in polynomial time.
+\end{proof}
+\end{mdframed}
+
+\textbf{7.7} Show that NP is closed under union and concatenation.
+\label{exe:NP_CLOSURE}
+
+\begin{mdframed}
+Let $M_1$ decides $L_1$ and $M_2$ decides $L_2$ in nondeterministic polynomial time.
+\end{mdframed}
+
+\textbf{a.} Union
+\begin{mdframed}
+\begin{proof}
+$M'$ is an NDTM and decides $L_1 \cup L_2$ in polynomial time.
+
+\medskip
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Nondeterministically decide whether to check if $w$ is a member of $L_1$ or $L_2$.
+\item If $L_1$ was chosen, run $M_1$ on $w$ and output whatever $M_1$ outputs. If $L_2$ was chosen, run $M_2$ on $w$ and output whatever $M_2$ outputs.
+\end{enumerate}
+
+$M'$ will run in $O(1) + \max(O(M_1), O(M_2)) = \max(O(M_1), O(M_2))$, which is still polynomial time. Thus NP is closed under union.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Concatenation
+
+\begin{mdframed}
+\begin{proof}
+$M'$ is an NDTM and decides $L_1L_2$ in polynomial time.
+
+\medskip
+$M'$ = On input $w$:
+\begin{enumerate}
+\item Nondeterministically divide $w$ into $w_1$ and $w_2$.
+\item Run $M_1$ on $w_1$.
+\item Run $M_2$ on $w_2$.
+\item If both accept, \textit{accept}. Otherwise, \textit{reject}.
+\end{enumerate}
+$M'$ runs in $\max(O(M_1), O(M_2))$, which is polynomial time. Thus, $L_1 L_2\in \NP$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:CONNECTED_P}
+\textbf{7.8} Let $CONNECTED = \{\desc{G} \mid \text{$G$ is a connected undirected graph} \}$. A graph is connected if every node can be reached from every other node by traveling along the edges of the graph. Analyze the algorithm given on page 185 to show that this language is in \P.
+\begin{mdframed}
+\begin{proof}
+The following TM $M$ decides $CONNECTED$.
+
+\medskip
+$M$ = On input $\desc{G}$ where $G$ is a graph:
+\begin{enumerate}
+\item Select and mark the first node of $G$.
+\item Repeat the following stage until no new nodes are marked:
+\item $\quad$ For each node in $G$, mark it if it is attached by an edge to a node that is already marked.
+\item Scan all the nodes of $G$ to determine whether they are all marked. If yes, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+The algorithm runs in $O(n^3)$ time.
+
+Stage 1 takes at most $O(n)$ steps to locate and mark the start node.
+
+Stage 2 causes at most $n - 1$ repetitions.
+
+Stage 3 uses at most $O(n^2)$ steps because $G$ contains at most $n$ to be checked an for each checked node, examining all adjacent nodes to see whether any have been marked uses at most $O(n^2)$ steps. 
+
+Therefore stage 2 and 3 take $O(n^3)$ time.
+
+Stage 4 takes $O(n)$ steps to scan all nodes.
+
+Therefore, the algorithm runs in $O(n^3)$ and $CONNECTED \in \P$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:TRIANGLE_P}
+\textbf{7.9} A triangle in an undirected graph is a 3-clique, show that $TRIANGLE \in \P$, where
+\[
+TRIANGLE = \{\desc{G} \mid \text{$G$ contains a triangle}\}
+\]
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM $M$ that decides $TRIANGLE$ in poly time.
+
+\medskip
+$M$ = On input $\desc{G}$ where $G$ is a graph:
+\begin{enumerate}
+\item For each triple of vertices $v_1, v_2, v_3$ in $G$:
+\item $\quad$ If edges $(v_1, v_2), (v_1, v_3), (v_2, v_3)$ are all edges of $G$, \textit{accept}.
+\item No triangle has been found in $G$, \textit{reject}.
+\end{enumerate}
+
+A graph with $m$ vertices has $\binom{m}{3} = O(m^3)$ triples of vertices. Therefore, stage 2 will repeated at most $O(m^3)$ times. In addition, each stage can be implemented to run in polynomial time. Therefore, $TRIANGLE \in \P$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:ALLDFA_P}
+\textbf{7.10} Show that $ALL_\DFA$ is in P.
+\begin{mdframed}
+\begin{proof}
+A DFA accepts $\Sigma^*$ iff all reachable states are accepting. Construct a TM $M$ to decide $ALL_\DFA$.
+
+\medskip
+$M$ = On input $\desc{A}$ where $A$ is a DFA:
+\begin{enumerate}
+\item Perform breadth-first search from start state
+\item $\quad$ If any state is not accepting, \textit{reject}.
+\item If all states are accepting, \textit{accept}
+\end{enumerate}
+
+Since breadth-first search is polynomial time, $M$ also runs in polynomial time. Thus $ALL_\DFA \in P$.
+\end{proof}
+\end{mdframed}
+
+\textbf{7.11} In both parts, provide an analysis of the time complexity of your algorithm.
+
+\label{lang:EQDFA_P}
+\textbf{a.} Show that $EQ_\DFA \in \P$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Say that a language $A$ is \textbf{star-closed} if $A = A^*$. Give a polynomial time algorithm to test whether a DFA recognizes a star-closed language
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{7.12} Call graphs $G$ and $H$ \textbf{isomorphic} if the nodes of $G$ may be reordered so that it is identical to $H$. Let $ISO = \{ \desc{G, H} \mid \text{$G$ and $G$ are isomophic graphs}\}$. Show that $ISO \in \NP$.
+\begin{mdframed}
+\begin{proof}
+\textbf{manual 7.11}
+
+An NDTM $N$ for $ISO$ works as follows:
+
+\medskip
+$N$ = On input $\desc{G, H}$ where $G$ and $H$ are undirected graphs:
+\begin{enumerate}
+\item Let $m$ be the number of nodes of $G$. Check if $H$ has $m$ nodes, if not, \textit{reject}.
+\item Nondeterministically select a permutation $\pi$ of $m$ elements.
+\item For each pair of nodes $x$ and $y$ of $G$ check that $(x, y)$ is an edge of $G$ iff $(\pi(x), \pi(y))$ is an edge of $H$. If all agree, \textit{accept}. If any differ, \textit{reject}.
+\end{enumerate}
+
+Stage 2 can be implemented in polynomial time nondeterministically.
+
+Stage 3 takes polynomial time.
+
+Therefore $ISO \in \NP$.
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\label{lang:MODEXP_P}
+\textbf{7.13} Let 
+\begin{align*}
+MODEXP = \{ \desc{a,b,c,p} \mid \; & a, b, c, p \text{ are positive binary integers} \\
+&\text{such that } a^b = c (\mod p)
+\}
+\end{align*}
+Show that $MODEXP \in \P$. (Note that the most obvious algorithm doesn't run in polynomial time)
+\begin{mdframed}
+\begin{proof}
+\textbf{manual 7.12}
+
+The most obvious algorithm is to carry out $a^b$ explicitly, which will take $b-1$ multiplication. Assume that $b$ has $n$ bits and $b$ is a power of 2, then $b = 2^{n-1}$. Let $x$ be the number of bits of $a^b$. We have $x = \log_2 a^{2^{n-1}} = 2^{n-1} \log_2 a$, which is exponential in the length of $b$. Thus, the obvious algorithm needs exponential space, which also runs in exponential time.
+
+\medskip
+We build a TM that uses repeated squaring to calculate $a^b \mod p$ to decide $MODEXP$.
+
+\medskip
+$M$ = On input $\langle a,b,c,p \rangle$:
+\begin{enumerate}
+\item Let $b = b_1 \cdots b_k$.
+\item Calculate $d_i = (a^{2^{(i-1)}} \mod p)$ for $i = 1, \ldots, k$ using repeated squaring.
+\item Let $d = 0$, for $i = 1, \ldots ,k$
+\item $\quad$ If $b_i = 1$, $d \leftarrow d + d_i$.
+\item If $d \mod p = c \mod p$, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+Note that $(a^{2^{(i+1)}} \mod p) = (a^{2^i} \mod p * a^{2^i} \mod p) \mod p$. Since modular operation is linear time, step 2 is polynomial time. And thus $M$ runs in polynomial time. 
+
+\medskip
+Reference: 
+\url{https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/fast-modular-exponentiation}
+\end{proof}
+\end{mdframed}
+
+\label{lang:PERMPOWER_P}
+\textbf{7.14} A \textbf{permutation} on the set $\{1, \ldots, k\}$ is a one-to-one, onto function on this set. When $p$ is a permutation, $p^t$ means the composition of $p$ with itself $t$ times. Let
+\begin{align*}
+PERMPOWER = \{ \desc{p, q, t} \mid \; & p = q^t \text{ where $p$ and $q$ are permutations on} \\
+& \{1, \ldots, k\} \text{ and $t$ is a binary integer}
+\}
+\end{align*}
+Show that $PERMPOWER \in \P$. (Note that the most obvious algorithm doesn't run with polynomial time.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{7.15} Show that P is closed under the star operation. (Hint: Use dynamic programming. On input $y=y_1 \cdots y_n$ for $y_i \in \Sigma$, build a table indicating for each $i \leq j$ whether the substring $y_i \cdots y_j \in A^*$ for any $A\in \P$)
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{7.16} Show that NP is closed under the star operation.
+\begin{mdframed}
+\begin{proof}
+Let $A \in \NP$ and an NDTM $M$ decide $A$ in nondeterministic poly time. Construct an NDTM $N$ to decide $A^*$ in nondeterministic poly time.
+
+\medskip
+$N$ = On input $w$:
+\begin{enumerate}
+\item If $w = \epsilon$, \textit{accept}.
+\item Nondeterministically choose $k$, where $1 \leq k \leq n$.
+\item Nondeterministically select strings $w_1, w_2, \ldots, w_k$, each of length at most $n$.
+\item If $w \neq w_1 \dots w_k$, then \textit{reject} (on this branch).
+\item Simulate (using nondeterminism) $M$ on each $w_i$.
+\item If $M$ accepts each $w_i$, \textit{accept}; otherwise \textit{reject}.
+\end{enumerate}
+
+Each stage takes poly time, so $N$ runs in poly time.
+\end{proof}
+\end{mdframed}
+
+\label{lang:UNARYSSUM_P}
+\textbf{7.17} Let $UNARYSSUM$ be the subset sum problem in which all numbers are represented in unary. Why does the NP-completeness proof of $SUBSETSUM$ fail to show $UNARYSSUM$ is NP-complete? Show that $UNARYSSUM \in \P$.
+
+\begin{mdframed}
+\begin{proof}
+\textbf{Manual 7.15}
+
+The reduction fails because it would result in an exponential unary instance, and therefore would not be a polynomial time reduction.
+\end{proof}
+\end{mdframed}
+
+\textbf{7.18} Show that if $\P = \NP$, then every language $A \in \P$, except $A = \emptyset$ and $A = \Sigma^*$, is
+NP-complete. Why can’t $\emptyset$ and $\Sigma^*$ be NP-complete?
+\begin{mdframed}
+\begin{proof}
+Let $A$ be any language in P and $A \neq \emptyset$ and $A \neq \Sigma^*$. To show that $A$ is NP-complete, we need to show.
+\begin{enumerate}
+\item $A \in \NP$.
+
+Since $\P = \NP$, $A \in \NP$.
+\item Every $B$ in NP is polynomial time reducible to $A$.
+
+Because $A \neq \emptyset$ and $A \neq \Sigma^*$, there exists $x \in A$ and $y \not \in A$. For a language $B \in \NP$, $B$ is also in P. So the reduction function will check in polynomial time whether an input $w\in B$. If $w \in B$, then $f(w) = x \in A$. Else if $w \not \in B$, then $f(w) = y \not \in A$. Thus, we have $w \in B$ iff $f(w) \in A$. Therefore, $B \leq_\P A$.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{7.19} Show that $PRIMES = \{ m \mid m \text{ is a prime number in binary}\} \in \NP$. (Hint: For $p > 1$, the multiplicative group $Z_p^* = \{ x \mid x \text{ is relatively prime to $p$ and $1\leq x < p$}\}$ is both cyclic and of order $p-1$ iff $p$ is prime. 
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{7.20} We generally believe that $PATH$ is not NP-complete. Explain the reason behind this belief. Show that proving $PATH$ is not NP-complete would prove $\P \neq \NP$.
+\begin{mdframed}
+\begin{proof}
+If $PATH$ is NP-complete, then $\forall L \in \NP$, $L \leq_\P PATH$. But since $PATH \in \P$, this implies that $\P = \NP$, which we believes is not true.
+
+\medskip
+Want to show that if $PATH$ is not NP-complete, then $\P \neq \NP$. We show the contrapositive, which is $\P = \NP$ then $PATH$ is NP-complete. First $PATH \in \P$, so $PATH \in \NP$. Then $\forall L \in \NP$, since $\P = \NP$, $L \leq_\P PATH$, so $PATH$ is NP-complete.
+\end{proof}
+\end{mdframed}
+
+\textbf{7.21} Let $G$ represent an undirected graph. Also let
+\begin{align*}
+SPATH &= \{\desc{G, a, b,k} \mid \text{$G$ contains a simple path of length at most $k$ from $a$ to $b$} \} \\
+LPATH &= \{\desc{G, a, b,k} \mid \text{$G$ contains a simple path of length at least $k$ from $a$ to $b$} \}
+\end{align*}
+
+\label{lang:SPATH_P}
+\textbf{a.} Show that $SPATH \in \P$.
+\begin{mdframed}
+\begin{proof}
+\textbf{Manual 7.16}
+
+Follow the marking algorithm for recognizing $PATH$ while additionally keeping track of the length of the shortest paths discovered. The following TM $M$ decides $SPATH$.
+
+\medskip
+$M$ = On input $\desc{G, a, b, k}$ where $G$ is a directed graph with $m$ nodes and has nodes $a$ and $b$:
+\begin{enumerate}
+\item Place a mark with label $0$ on node $a$.
+\item For each $i$ from $0$ to $m$:
+\item $\quad$ Scan all the edges of $G$. If an edge $(s, t)$ is found going from a node $s$ marked with $i$ to an unmarked node $b$, mark node $t$ with $i+1$.
+\item If $t$ is marked with a value of at most $k$ accept. Otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:LPATH_NP}
+\label{lang:LPATH_NPC}
+\textbf{b.} Show that $LPATH \in \NPC$.
+\begin{mdframed}
+\begin{proof}
+\textbf{Manual 7.16}
+
+First $LPATH \in \NP$ because an NDTM can guess and verify a simple path of length at least $k$ from $a$ to $b$.
+
+Next, $UHAMPATH \leq_\P LPATH$, because the following TM $F$ computes the reduction $f$.
+
+\medskip
+$F$ = On input $\desc{G, a, b}$, where $G$ is an undirected graph and has nodes $a$ and $b$:
+\begin{enumerate}
+\item Let $k$ be the number of nodes in $G$.
+\item Output $\desc{G, a, b, k}$.
+\end{enumerate}
+
+If $\desc{G, a, b} \in UHAMPATH$, $G$ contains a Hamiltonian path of length $k$ from $a$ to $b$, which is at least $k$, thus $\desc{G, a, b, k} \in LPATH$.
+
+If $\desc{G, a, b, k} \in LPATH$, $G$ contains a simple path of length $k$ from $a$ to $b$. Since $G$ has $k$ nodes, this path is Hamiltonian. Thus $\desc{G, a, b} \in UHAMPATH$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:DOUBLESAT_NP}
+\label{lang:DOUBLESAT_NPC}
+\textbf{7.22} Let 
+\[
+DOUBLESAT= \{ \desc{\phi} \mid \text{$\phi$ has at least two satisfying assignments} \}
+\]
+Show that $DOUBLESAT$ is NP-complete.
+\begin{mdframed}
+\begin{proof}
+\textbf{manual 7.19}
+
+On input $\phi$, a poly time NDTM can guess two assignments and accept if both assignments satisfy $\phi$. Thus $DOUBLESAT \in \NP$.
+
+We show that $SAT \leq_\P DOUBLESAT$. The following TM $F$ computes the polynomial time reduction $f$.
+
+\medskip
+$F$ = On input $\desc{\phi}$ where $\phi$ is a Boolean formula with variables $x_1, x_2, \ldots, x_m$
+\begin{enumerate}
+\item Let $\phi'$ be $\phi \wedge (x \vee \overline{x})$, where $x$ is a new variable.
+\item Output $\desc{\phi'}$.
+\end{enumerate}
+
+If $\desc{\phi} \in SAT$, $\phi'$ has at least two satisfying assignments because we can obtain two assignments from the original assignment of $\phi$ by changing the value of $x$. If $\desc{\phi'} \in DOUBLESAT$, $\phi$ is also satisfiable, because $x$ does not appear in $\phi$. Therefore $\desc{\phi} \in SAT$ iff $f(\desc{\phi}) \in DOUBLESAT$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:HALFCLIQUE_NP}
+\label{lang:HALFCLIQUE_NPC}
+\textbf{7.23} Let 
+\begin{align*}
+HALFCLIQUE = \{ \desc{G} \mid & \text{$G$ is an undirected graph having a complete subgraph} \\
+& \text{with at least $m/2$ nodes, where $m = |G|$}
+\}
+\end{align*}
+Show that $HALFCLIQUE$ is NP-complete.
+\begin{mdframed}
+\begin{proof}
+\textbf{Manual 7.21}
+
+$HALFCLIQUE \in \NP$ because an NDTM can guess and verify a clique with at least $m/2$ nodes in polynomial time. 
+
+\medskip
+We show that $CLIQUE \leq_\P HALFCLIQUE$. The following TM $F$ computes the reduction $f$.
+
+\medskip
+$F$ = On input $\desc{G, k}$ where $G$ is an undirected graph $|G| = m$ and $k$ an integer:
+\begin{enumerate}
+\item If $k = m / 2$, output $\desc{G}$.
+\item If $k < m / 2$, construct $G'$ by adding a complete graph with $m-2k$ nodes and connecting them to all nodes in $G$. Output $\desc{G'}$.
+\item If $k > m / 2$, construct $G''$ by adding $2k - m$ isolated nodes. Output $\desc{G''}$.
+\end{enumerate}
+
+When $k < m / 2$, if $G$ has a k-clique, $G'$ has a clique of size $k + (m - 2k) = (2m - 2k )/2$, thus $G' \in HALFCLIQUE$. If $G'$ has $k+(m-2k)$-clique, then at most $m-2k$ of them come from the new nodes, thus $G$ must contain a $k$-clique. When $k> m/ 2$, if $G$ has a $k$-clique, $G''$ has a clique of size $(m + 2k - m) / 2 = k$, thus $G'' \in HALFCLIQUE$. If $G'' \in HALFCLIQUE$, $G$ must contain a $k$-clique because the half-clique cannot include any of the new isolated nodes.
+\end{proof}
+\end{mdframed}
+
+
+\textbf{7.24} Let
+\[
+CNF_k = \{\desc{\phi} \mid \phi \text{ is a satisfiable cnf-formula where each variable appears in at most $k$ places} \}
+\]
+\textbf{a.} Show that $CNF_2 \in \P$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Show that $CNF_3$ is NP-complete.
+\begin{mdframed}
+\begin{proof}
+Show that $3SAT \leq_\P CNF_3$.
+\end{proof}
+\end{mdframed}
+
+\textbf{7.25} Let 
+\begin{align*}
+CNF_\text{H} = \{ \desc{\phi} \mid & \phi \text{ is a satisfiable cnf-formula where each clause contains}  \\
+& \text{two literals, but at most one negated literal}\}
+\end{align*}
+Show that $CNF_\text{H} \in \P$.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\label{lang:NEQSAT_NPC}
+\textbf{7.26} Let $\phi$ be a 3cnf-formula. An \textbf{$\neq$-assignment} to the variables of $\phi$ is one where each clause contains two literals with unequal truth values. In other words, an $\neq$-assignment satisfies $\phi$ without assigning three true literals in any clause.
+
+\textbf{a.} Show that the negation of any $\neq$-assignment to $\phi$ is also an $\neq$-assignment.
+\begin{mdframed}
+\begin{proof}
+\textbf{manual 7.22}
+
+By definition of an $\neq$-assignment, not all three literals in a clause can be true, which means there's at least one true literal and one false literal. Therefore, for the negation of such an $\neq$-assignment, there will also be at least one true literal and one false literal, and it also satisfies $\phi$. Thus, the negations of any $\neq$-assignment to $\phi$ is also an $\neq$-assignment.
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Let $\neq SAT$ be the collection of 3cnf-formulas that have an $\neq$-assignment. Show that we obtain a polynomial time reduction from $3SAT$ to $\neq SAT$ by replacing each clause $c_i$ of $(y_1 \vee y_2 \vee y_3)$ with the two clauses $(y_1 \vee y_2 \vee z_i)$ and $(\overline{z_i} \vee y_3 \vee b)$, where $z_i$ is a new variable for each clause $c_i$, and $b$ is a single additional new variable.
+
+\begin{mdframed}
+\begin{proof}
+We want to show that $\phi \in 3SAT$ iff $f(\phi) \in \neq SAT$. Or $\phi$ has a satisfiable assignment iff $f(\phi)$ has an $\neq$-assignment.
+
+\medskip
+First, given that $\phi$ is satisfiable, we show that the reduction gives an $\neq$-assignment. If $\phi$ is satisfiable, then at least one of $y_1, y_2, y_3$ is true. We see that the following assignments are all $\neq$-assignments, provided that $(y_1, y_2, y_3)$ is a satisfiable assignment to any given clause of $3SAT$.
+\begin{center}
+\begin{tabular}{|c|c||c|c|c|}
+\hline
+$y_1 \vee y_2$  & $z_i$ &  $\overline{z_i}$  & $y_3$ & $b$  \\ \hline \hline
+0 & 1 & 0 & 1 & 0 \\ \hline
+1 & 0 & 1 & 0,1& 0 \\ \hline
+\end{tabular}
+\end{center}
+
+We will always assign $b=0$, and if $y_1 \vee y_2 = 0$, then $z_i = 1$, otherwise, $z_i = 0$. And each clause clearly satisfies the restriction of an $\neq$-assignment.
+
+\medskip
+Second, given that $f(\phi)$ has an $\neq$-assignment, we show that $\phi$ is satisfiable. We can always let $b=0$ using \textbf{(a)} because the negation of an $\neq$-assignment is also an $\neq$-assignment. Note that if $b=0$, then in order for$(y_1 \vee y_2 \vee z_i) \wedge (\overline{z_i} \vee y_3 \vee b)$ to be 1, we cannot have $y_1, y_2, y_3$ to be all zeros, otherwise the second clause will be all zeros. Thus, $y_1, y_2, y_3$ must contain at least one true variable, which means that $\phi$ is satisfiable. 
+\end{proof}
+\end{mdframed}
+
+\textbf{c.} Conclude that $\neq SAT$ is NP-complete.
+\begin{mdframed}
+\begin{proof}
+$\neq SAT$ is NP-complete, because 
+\begin{enumerate}
+\item $\neq SAT \in \NP$, and
+\item $3SAT \leq_\P \neq SAT$ and $3SAT$ is NP-complete.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{7.30} Let 
+\begin{align*}
+SETSPLITTING = \{ \desc{ S, C} \mid & S \text{ is a finte set and } C = \{ C_1, \ldots, C_k \} \text{ is a collection of subsets of $S$} \\
+& \text{for some $k > 0$, such that elements of $S$ can be colored red or blue} \\ 
+& \text{so that no $C_i$ has all its elements colored with the same color}\}
+\end{align*}
+
+\textbf{7.51} This problem investigates \textbf{resolution}, a method for proving the unsatisfiability of cnf-formulas. Let $\phi = C_1 \wedge C_2 \wedge \cdots \wedge C_m$ be a formula in cnf, where the $C_i$ are its clauses. Let $\mathcal{C} = \{ C_i \mid C_i \text{ is a clause of $\phi$} \}$. In a \textit{resolution step}, we take two clauses $C_a$ and $C_b$ in $\mathcal{C}$, which both have some variable $x$ occurring positively in one of the clauses and negatively in the other. Thus, $C_a = (x \wedge y_1 \wedge y_2 \wedge \cdots \wedge y_k)$ and $C_b = (\overline{x} \wedge z_1 \wedge z_2 \wedge \cdots \wedge z_l)$, where $y_i$ and $z_i$ are literals. We form the new clause $y_1 \wedge y_2 \wedge \cdots \wedge y_k \wedge z_1 \wedge z_2 \wedge \cdots \wedge z_l$) and remove repeated literals. Add this new clause to $\mathcal{C}$. Repeat the resolution stps until no additional clauses can be obtained. If the empty clause $()$ is in $\mathcal{C}$, then declare $\phi$ unsatisfiable. 
+
+Say that resolution is \textbf{sound} if it never declares satisfiable formulas to be unsatisfiable. Say that resolution is \textbf{complete} if all unsatisfiable formulas are declared to be unsatisfiable.
+
+\textbf{a.} Show that resolution is sound and complete.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Use part (a) to show that $2SAT \in \P$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}

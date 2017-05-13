@@ -1,0 +1,103 @@
+\subsection{Exercises}
+
+\subsection{Problems}
+\textbf{6.21} Show how to compute the descriptive complexity of strings $K(x)$ with an oracle for $A_\TM$.
+
+\begin{mdframed}
+\begin{proof}
+Show how to compute $K(x)$ with an oracle for $A_\TM$.
+
+\medskip
+$M$ = On input $x$:
+\begin{enumerate}
+\item Compute length $|x| + c$, where $c$ is the length of TM that halts immediately upon starting.
+\item Start testing all the strings $s$ up to $|x| + c$, since $K(x) \leq |x| + c$. And all the strings up to that length are potential description of $x$.
+\item If $s$ is well formed as $\desc{M, w}$ from all binary strings in standard string order, then use oracle tell whether $M$ accepts $w$.
+\item If oracle says yes, then run $M$ on $w$, compare the result with $x$. If they are the same, output $K(x) = |d(x)|$ and halt; otherwise got to the next string.
+\item If oracle says no, just go to the next string.
+\end{enumerate}\textbf{}
+\end{proof}
+\end{mdframed}
+
+\textbf{6.22} Use the result of Problem 6.21 to give a function $f$ that is computable with an oracle for $A_\TM$, where for each $n$, $f(n)$ is an incompressible string of length $n$.
+\begin{mdframed}
+\begin{proof}
+For a string $x$, if $x$ does not have any description shorter than itself, then $x$ is incompressible.
+
+Let $M$ be a TM that uses the oracle $A_\TM$ and computes the description length of any given string. Build a TM $F$ that computes $f$.
+
+\medskip
+$F$ = On input $n$
+\begin{enumerate}
+\item Enumerate all strings $x$ of length $n$ in string order.
+\item For each $x$, use $M$ to compute descriptive complexity $K(x)$.
+\item As soon as we find a string that is incompressible, i.e. $K(x) \geq |x|$, output $x$.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{6.23} Show that the function $K(x)$ is not a computable function.
+\begin{mdframed}
+\begin{proof}
+Assume for the sake of contradiction that $K(x)$ is a computable function.
+
+Then we can use the TM $F$ in problem 6.22 to compute the first incompressible string of length $n$. Thus $d(s) = \desc{F} b_n$, where $b_n$ is the binary string of integer $n$. Hence $K(x) = |d(s)| = |\desc{F} b_n| = |\desc{f}| + |b_n| = c + \log n$. By picking $s$ long enough, we have $|s| = n > \log n + c = |\desc{F} b_n| = K(s)$ which is $K(s) < |s|$, this contradicts the fact that $s$ is incompressible. Thus $K(x)$ is not a computable function.
+\end{proof}
+\end{mdframed}
+
+\textbf{6.24} Show that the set of incompressible strings is undecidable.
+\begin{mdframed}
+\begin{proof}
+Assume for the sake of contradiction that the set of incompressible strings is decidable. Since incompressible string of every length exists, this set is infinite. From this we know that there exists an enumerator $E$, that enumerates strings in this language in standard string order. We then build a TM $M$ that computes the first incompressible string of length $n$.
+
+\medskip
+$M$ = On input $b$, where $b$ is the binary string of integer $n$:
+\begin{enumerate}
+\item Run $E$, and output the first string of length $n$.
+\end{enumerate}
+
+This machine always halts, because there are finitely many strings with length less than $n$. Let the output string be $x$. $x$ is the first incompressible string of length $n$. Hence, $d(x) = \desc{M}b$, and $K(x) = |\desc{M}b| = \log n + c$. We then pick $n$ big enough such that $|x| = n > \log n + c = K(x)$, which means $K(x) < |x|$. This contradicts the fact that $x$ is incompressible. Hence our earlier assumption that the set of incompressible strings is decidable is wrong.
+\end{proof}
+\end{mdframed}
+
+\textbf{6.25} Show that the set of incompressible strings contains no infinite subset that is Turing-recognizable.
+\begin{mdframed}
+\begin{proof}
+Assume for the sake of contradiction that the set of incompressible strings contains an infinite subset that is Turing-recognizable. Call this set $S$. Since $S$ is Turing-recognizable, there is an enumerator $E$ that enumerates elements of $S$.
+
+We then build a TM $N$ that computes incompressible string of length at least $n$.
+
+\medskip
+$N$ = On input $b$, where $b$ is binary string of integer $n$:
+\begin{enumerate}
+\item Run $E$, and for each string $x$ compare its length with $n$.
+\item If $|x| \geq n$, halt with $x$.
+\end{enumerate}
+Since $x$ is incompressible, $d(x) = |\desc{N}b| = \log n + c$, we can then pick $n$ big enough such that $|x| = n > \log n + c = K(x)$, thus contradicts the fact that $x$ is incompressible. Hence our earlier assumption that the setup incompressible strings contains an infinite Turing-recognizable subset is wrong.
+\end{proof}
+\end{mdframed}
+
+\textbf{6.27} Let $S = \{\desc{M} \mid \text{$M$ is a TM and $L(M) = \{\desc{M}\}$}\}$. show that neither $S$ nor $\overline{S}$ is Turing-recognizable.
+\begin{mdframed}
+\begin{proof}
+To show that $S$ is not Turing-recognizable, we reduce $A_\TM$ to $\overline{S}$. The reduction function works as follow:
+
+\medskip
+$F$ = On input $\desc{M, w}$:
+\begin{enumerate}
+\item Create a TM $N$. 
+
+$N$ = On input $x$:
+\begin{enumerate}
+\item If $x = \desc{N}$, accept.
+\item If $x = 0$, run $M$ on $w$, accept if $M$ accepts;
+\item For any other input $x$, reject.
+\end{enumerate}
+\end{enumerate}
+
+This is a mapping reduction from $A_\TM$ to $\overline{S}$. If $M$ accepts $w$, then $L(N) = \{\desc{N},0 \}$, thus $\desc{N} \in \overline{S}$. If $M$ does not accept $w$, then $L(N) = \{\desc{N} \}$, thus $\desc{N} \not \in \overline{S}$. Therefore, $\desc{M, w} \in A_\TM$ iff $f(\desc{M, w}) \in \overline{S}$. Because $A_\TM \leq_m \overline{S}$, we have $\overline{A_\TM} \leq_m S$. Since $A_\TM$ is not Turing-recognizable, $S$ is also not Turing-recognizable.
+
+\medskip
+Similarly, we can show that $A_\TM \leq_m S$, or equivalently $\overline{A_\TM} \leq_m \overline{S}$, thus showing $\overline{S}$ is not Turing-recognizable.
+\end{proof}
+\end{mdframed}

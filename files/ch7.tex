@@ -1,0 +1,744 @@
+\section{Complexity Theory}
+
+\subsection{Measuring Complexity}
+
+For simplicity, we compute the running time of an algorithm purely as a function of the length of the string representing the input and don't consider any other parameters.
+
+In \textbf{worst-case analysis}, we consider the longest running time of all inputs of a particular length.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.1}
+
+\medskip
+Let $M$ be a DTM that halts on all inputs. The \textbf{running time} or \textbf{time complexity} of $M$ is the function $f: \mathbb{N} \rightarrow \mathbb{N}$, where $f(n)$ is the maximum number of steps that $M$ uses on any input of length $n$. Say that $M$ runs in time $f(n)$ and that $M$ is an $f(n)$ time TM.
+\end{shaded}
+
+\subsubsection{Big-O and Small-O Notation}
+
+In \textbf{asymptotic analysis}, we seek to understand the running time of the algorithm when it is run on large inputs
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.2}
+
+\medskip
+Let $f$ and $g$ be functions $f, g:\mathbb{N} \rightarrow \mathbb{R}^+$. Say that \textbf{$f(n) = O(g(n))$} if positive integers $c$ and $n_0$ exist such that for every integer $n \geq n_0$, $f(n) \leq cg(n)$. 
+
+When $f(n) = O(g(n))$, $g(n)$ is an \textbf{upper bound} for $f(n)$, or that $g(n)$ is an \textbf{asymptotic upper bound} for $f(n)$ to emphasize that we are suppressing constant factors.
+\end{shaded}
+
+Intuitively, $f(n) = O(g(n))$ means that $f$ is less than or equal to $g$ if we disregard difference up to a constant factor. You may think of $O$ as a representing a suppressed constant.
+
+Changing the value of base $b$ changes the value of $\log_b n$ by a constant factor, since 
+\[
+\log_b n = \frac{\log_2 n}{\log_2 b} = \frac{\log_a n}{\log_a b}
+\]
+Thus when we write $f(n) = O(\log n)$, specifying the base is no longer necessary because we are suppressing constant factors anyway.
+
+When Big-$O$ notation appears in arithmetic expressions, each occurrence of $O$ symbol represents a different suppressed constant. $f(n) = O(n^2) + O(n)$, the $O(n^2)$ term dominates the $O(n)$ term, that expression is equivalent to $f(n) = O(n^2)$.
+
+When the $O$ symbol occurs in an exponent, $f(n) = 2^{O(n)}$, it means an upper bound of $2^{cn}$ for some constant $c$.
+
+For $f(n) = 2^{O(\log n)}$, using the identity $n = 2 ^{\log_2n}$ and thus $n^c = 2^{c\log_2n}$, we see that $2^{O(\log n)}$ represents an upper bound of $n^c$ for some $c$.
+
+Bounds of the form $n^c$ for $c>0$ are called \textbf{polynomial bounds}. Bounds of the form $2^{(n^\delta)}$ are called \textbf{exponential bounds} for $\delta > 0$.
+
+\textbf{small-o notation}: Big-$O$ notation says that one function is asymptotically \textit{no more than} another. Small-$o$ notation says one function is asymptotically \textit{less than} another.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.5}
+
+\medskip
+Let $f$ and $g$ be functions $f, g: \mathbb{N} \rightarrow \mathbb{R}^+$. Say that \textbf{$f(n) = o(g(n))$} if 
+\[
+\lim_{n\rightarrow \infty} \frac{f(n)}{g(n)} = 0
+\]
+$f(n) = o(g(n))$ means that for any real number $c > 0$, a number $n_0$ exists, where $f(n) < cg(n)$ for all $n \geq n_0$.
+\end{shaded}
+
+{\color{blue} $f(n)$ is never $o(f(n))$, $f(n)$ is always $O(f(n))$.}
+
+\subsubsection{Analyzing Algorithms}
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.7}
+
+\medskip
+Let $t: \mathbb{N} \rightarrow \mathbb{R}^+$ be a function. Define the \textbf{time complexity class}, \textbf{$\TIME(t(n))$}, to be the collection of all languages that are \textbf{decidable} by an $O(t(n))$ time TM.
+\end{shaded}
+
+The sequence of parities always gives the reverse of the binary representation. If all parities agree, the binary representations of the number of 0s and of 1s agree, and so the two numbers are equal.
+
+{\color{blue} Any language that can be decided in $o(n\log_n)$ time on a single-tape TM is regular.}
+
+In computability theory, the Church-Turing thesis implies that all reasonable models of computation are equivalent, they all decide the same class of language. In complexity theory, the choice of model affects the time complexity of languages.
+
+\subsubsection{Complexity Relationships Among Models}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.8}
+
+\medskip
+Let $t(n)$ be a function, where $t(n) \geq n$. Then every $t(n)$ time multitape TM has an equivalent $O(t^2(n))$ time single-tape TM.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that simulating each step of the multitape TM uses at most $O(t(n))$ steps on the single-tape TM. 
+
+\medskip
+Let $M$ be a k-tape TM that runs in $t(n)$ time. Construct a single-tape TM $S$ that runs in $O(t^2(n))$ time.
+
+\medskip
+Machine $S$ operates by simulating $M$. Initially, $S$ puts its tape into the format that represents all the tapes of $M$ and then simulates $M$'s steps. To simulate one step, $S$ scans all the information stored on its tape to determine the symbols under $M$'s tape heads. Then $S$ makes another pass over its tape to update the tape contents and head positions. If one of $M$'s heads moves rightward onto the previously unread portion of its tape, $S$ must increase the amount of space allocated to this tape. 
+
+\medskip
+For each step of $M$, $S$ makes two passes over the active portion of its tape. The first obtains the information necessary to determine the next move and the second carries it out. Each the active portion of $S$'s tape has length at most $t(n)$ because $M$ uses $t(n)$ tape cells in $t(n)$ steps if the head moves rightward at every step. Thus the scan of the active portion of $S$'s tape uses $O(t(n))$ steps.
+
+\medskip
+To simulate each of $M$'s steps, $S$ performs two scans and possibly up to $k$ rightward shifts. Each uses $O(t(n))$ time, so the total time for $S$ to simulate one of $M$'s steps is $O(t(n))$.
+
+\medskip
+Therefore the entire simulation of $M$ uses $O(n) + O(t^2(n)) = O(t^2(n))$ steps.
+\end{proof}
+\end{mdframed}
+
+Recall that an NDTM is a decide if all its computation branches halt on all inputs.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.9}
+
+\medskip
+Let $N$ be a NDTM that is a decider. The \textbf{running time} of $N$ is the function $f:\mathbb{N}\rightarrow \mathbb{N}$ where $f(n)$ is the maximum number of steps that $N$ uses on any branch of tis computation on any input of length $n$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.11}
+
+\medskip
+Let $t(n) \geq n$ be a function. Then every $t(n)$ time single-tape NDTM has an equivalent $2^{O(t(n))}$ time single-tape DTM.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Let $N$ be an NDTM in $t(n)$ time. Construct a DTM $D$ that simulates $N$ by searching $N$'s nondeterministic computation tree.
+
+\medskip
+On an input of length $n$, every branch of $N$'s nondeterministic computation tree has a length of at most $t(n)$. Every node in the tree can have at most $b$ children ($b$ is the maximum branching factor). Thus the total number of leaves in the tree is at most $b^{t(n)}$.
+
+\medskip
+The simulation proceeds by exploring this tree breadth first. It visits all nodes at depth $d$ before going on to any of the nodes at depth $d+1$. The total number of nodes in the tree is less than twice the maximum number of leaves, so bound it by $O(b^{t(n)})$. The time it takes to start from the root and travel down to a node is $O(t(n))$.Therefore, the running time of $D$ is $O(t(n)b^{t(n)}) = 2^{O(t(n))}$. 
+
+\begin{align*}
+O(t(n) b^{t(n)}) = c t(n) b^{t(n)} = 2^{\log_2 (ct(n)) + t(n)\log_2 b} = 2^{O(t(n))}
+\end{align*}
+
+TM $D$ has 3 tapes. Converting to a single-tape TM at mosts squares the running time. Thus, the running time of the single-tape simulator is $(2^{O(t(n))})^2 = 2^{O(2t(n))} = 2^{O(t(n))}$.
+\end{proof}
+\end{mdframed}
+
+\subsection{The Class P}
+
+\subsubsection{Polynomial Time}
+
+Polynomial differences in running time are considered to be small, whereas exponential differences are considered to be large.
+
+Exponential time algorithms typically arise when solving problems by exhaustively searching through a space of solutions, called \textbf{brute-force search}.
+
+All reasonable deterministic computational models are \textbf{polynomially equivalent}. Any one of them can simulate another with only a polynomial increase in running time.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.12}
+
+\medskip
+P is the class of languages that are \textbf{decidable} in polynomial time on a single-tape DTM. 
+\[
+P = \bigcup_k \TIME(n^k)
+\]
+\end{shaded}
+
+\subsubsection{Examples of Problems in P}
+
+When analyzing an algorithm:
+\begin{enumerate}
+\item Give a polynomial upper bound on the number of stages that the algorithm uses when it runs on an input of length $n$.
+\item Examine the individual stages in the description of the algorithm to be sure that each can be implemented in polynomial time on a reasonable deterministic model.
+\end{enumerate}
+
+In reasonable graph representations, the size of the representation is a polynomial in the number of nodes.
+
+\label{theo:7.14}
+\label{lang:PATH_P}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.14}
+
+\medskip 
+$PATH \in \P$
+\[
+PATH = \{\desc{G, s, t} \mid \text{$G$ is a directed graph that has a directed path from $s$ to $t$}\}.
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+A potential path is a sequence of nodes in G having a length of at most $m$, where $m$ is the number of nodes in $G$. A Polynomial time algorithm $M$ for $PATH$ operates as follows.
+
+\medskip
+$M$ = On input $\desc{G, s, t}$ where $G$ is a directed graph with nodes $s$ and  $t$:
+\begin{enumerate}
+\item Place a mark on node $s$.
+\item Repeat the following until no additional nodes are marked:
+\item $\quad$ Scan all the edges of $G$. If an edge $(a, b)$ is found going from a marked node $a$ to an unmarked node $b$, mark node $b$.
+\item If $t$ is marked, \textit{accept}. Otherwise, \textit{reject}.
+\end{enumerate}
+Stage 1 and 4 are executed only once.
+
+Stage 3 runs at most $m$ times because each time except the last it marks an additional node in $G$. Thus the total number of stages is at most $1 + 1 + m$, which is polynomial in the size of $G$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:RELPRIME_P}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.15}
+
+\medskip
+$RELPRIME \in \P$.
+\[
+RELPRIME = \{\desc{x, y} \mid \text{$x$ and $y$ are relatively prime} \}
+\]
+\end{shaded}
+\label{lang:RELPRIME_P}
+
+\begin{mdframed}
+\begin{proof}
+The magnitude of a number represented in binary, or in any other base $k$ notation for $k \geq 2$, is exponential in the length of its representation. Brute-force algorithm searches through an exponential number of potential divisors and has an exponential running time.
+
+\medskip
+The Euclidean algorithm $E$ is 
+
+\medskip
+$E$ = On input $\desc{x,y}$ where $x$ and $y$ are natural numbers in binary:
+\begin{enumerate}
+\item Repeat until $y=0$:
+\item $\quad$ Assign $x \leftarrow x \mod y$.
+\item $\quad$ Exchange $x$ and $y$.
+\item Output x.
+\end{enumerate}
+
+Algorithm $R$ solves $RELPRIME$, using $E$ as a subroutine.
+
+\medskip
+$R$ = On input $\desc{x, y}$:
+\begin{enumerate}
+\item Run $E$ on $\desc{x, y}$.
+\item If the result is 1, \textit{accept}. Otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{The Class NP}
+A \textbf{Hamiltonian path} in a directed graph $G$ is a directed path that goes through each node exactly once. 
+\[
+HAMPATH = \{\desc{G, s, t} \mid \text{$G$ is a directed graph with a Hamiltonian path from $s$ to $t$}\}
+\]
+\label{lang:HAMPATH_NP}
+\begin{mdframed}
+A certificate for a string $\desc{ G, s, t} \in HAMPATH$ is a Hamiltonian path from $s$ to $t$.
+
+A NDTM $N_1$ that decides $HAMPATH$.
+
+\medskip
+$N_1$ = On input $\desc{G, s, t}$, where $G$ is a directed graph with nodes $s$ and $t$:
+\begin{enumerate}
+\item Write a list of $m$ numbers, $p_1, \ldots, p_m$, where $m$ is the number of nodes in $G$. Each number in the list is nondeterministically selected to be between $1$ and $m$.
+\item Check for repetitions in the list. If any are found, \textit{reject}.
+\item Check whether $s= p_1$ and $t=p_m$. If either fail, \textit{reject}.
+\item For each $i$ between $1$ and $m-1$, check whether $(p_i, p_{i+1})$ is an edge of $G$. If any are not, \textit{reject}. Otherwise, all tests have been passed, \textit{accept}.
+\end{enumerate}
+\end{mdframed}
+
+Verifying the existence of a hamiltonian path may be much easier than determining its existence.
+
+\[
+COMPOSITES = \{x \mid x = pq, \text{for integers } p, q > 1 \}
+\]
+\label{lang:COMPOSITES_NP}
+\begin{mdframed}
+A certificate for the composite number $x$ is one of its divisors.
+\end{mdframed}
+
+Some problems may not be polynomially verifiable. For example, $\overline{HAMPATH}$, the complement of the $HAMPATH$ problem.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.18}
+
+\medskip
+A \textbf{verifier} for a language $A$ is an algorithm $V$, where
+\[
+A = \{w \mid \text{$V$ accepts $\desc{w, c}$ for some string $c$} \}
+\]
+We measure the time of a verifier only in terms of the length of $w$, so a \textbf{polynomial time verifier} runs in polynomial time in $|w|$. A language $A$ is \textbf{polynomially verifiable} if it has a polynomial time verifier
+\end{shaded}
+
+$c$ is called a \textbf{certificate}, or \textbf{proof}, of membership in $A$. For polynomial verifiers, the certificate has polynomial length because that is all the verifier can access in its time bound.
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.19}
+
+\medskip
+\textbf{NP} is the class of languages that have polynomial time verifiers.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.20}
+
+\medskip
+A language is in NP iff it is decided by some nondeterministic polynomial time Turing machine.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show how to convert polynomial time verifier to an equivalent polynomial time NTM and vice versa. The NDTM simulates the verifier by guessing the certificate. The verifier simulates the NDTM by using the accepting branch as the certificate.
+
+\medskip
+Let $A \in \NP$ and show that $A$ is decided by a polynomial time NTM $N$. Let $V$ be the polynomial time verifier for $A$ that exists by the definition of $NP$. Assume that $V$ is a TM that runs in polynomial time and construct $N$ as follows.
+
+\medskip
+$N$ = On input $w$ of length $n$:
+\begin{enumerate}
+\item Nondeterministically select string $c$ of length at most $n^k$.
+\item Run $V$ on input $\desc{w, c}$.
+\item If $V$ accepts, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+\medskip
+Assume that $A$ is decided by a poly time NDTM $N$ and construct a poly time verifier $V$ as follows.
+
+\medskip
+$V$ = On input $\desc{w, c}$:
+\begin{enumerate}
+\item Simulate $N$ on input $w$, treating each symbol of $c$ as a description of the nondeterministic choice to make at each step.
+\item If this branch of $N$'s computation accepts, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.21}
+\[
+\textbf{NTIME($t(n)$)} = \{ L \mid \text{$L$ is a language decided by an $O(t(n))$ time NDTM}\}
+\]
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 7.22}
+
+\medskip
+\[
+\NP = \bigcup_k \NTIME(n^k)
+\]
+\end{shaded}
+
+\subsubsection{Examples of Problems in NP}
+
+A \textbf{clique} in an undirected graph is a subgraph, wherein every two nodes are connected by an edge. A \textbf{k-clique} is a clique that contains $k$ nodes.
+
+\label{lang:CLIQUE_NP}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.24}
+
+\medskip
+$CLIQUE \in \NP$.
+\[
+CLIQUE = \{ \desc{G, k} \mid \text{$G$ is an undirected graph with a k-clique}\}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+The clique is the certificate. The following is a verifier $V$ for $CLIQUE$.
+
+\medskip
+$V$ = On input $\desc{\desc{G, k}, c}$, where $G$ is an undirected graph
+\begin{enumerate}
+\item Test whether $c$ is a subgraph with $k$ nodes in $G$.
+\item Test whether $G$ contains all edges connecting nodes in $c$.
+\item If both pass, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+Construct an NDTM $N$ that decides $CLIQUE$.
+
+\medskip
+$N$ = On input $\desc{G, k}$, where $G$ is an undirected graph:
+\begin{enumerate}
+\item Nondeterministically select a subset $c$ of $k$ nodes of $G$.
+\item Test whether $G$ contains all edges connecting nodes in $c$.
+\item If yes, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:SUBSETSUM_NP}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.25}
+
+\medskip
+$SUBSETSUM \in \NP$.
+\begin{align*}
+SUBSETSUM = \{ \desc{S, t} \mid &S = \{ x_1, \ldots, x_k\}, \text{and for some}\\ 
+&\{ y_1, \ldots, y_k\} \subseteq \{ x_1, \ldots, x_k\}\}, \sum y_i = t \}
+\end{align*}
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+The subset is the certificate. The following is a verifier $V$ for $SUBSETSUM$.
+
+\medskip
+$V$ = On input $\desc{\desc{S, t}, c}$:
+\begin{enumerate}
+\item Test whether $c$ is a collection of numbers that sum to $t$.
+\item Test whether $S$ contains all the numbers in $c$.
+\item If both pass, \textit{accept}; otherwise, \textit{reject}.
+\end{enumerate}
+
+\medskip
+Construct an NDTM $N$ that decides $SUBSETSUM$.
+
+\medskip
+$N$ = On input $\desc{S, t}$:
+\begin{enumerate}
+\item Nondeterministically select a subset $c$ of the numbers in $S$.
+\item Test whether $c$ is a collection of numbers that sum to $t$.
+\item If yes, \textit{accept}, otherwise, \textit{reject}.
+\end{enumerate}
+
+\end{proof}
+\end{mdframed}
+
+{\color{blue} The complements of these sets, $\overline{CLIQUE}$ and $\overline{SUBSETSUM}$ are not obviously members of $NP$. Verifying that something is \textit{not} present seems to be more difficult than verifying that it \textit{is} present.}
+
+\textbf{coNP} contains the languages that are complements of languages in NP. We don't know whether coNP is different from NP.
+
+\subsubsection{The P Versus NP Question}
+
+P = the class of languages for which membership can be decide quickly.
+
+NP = the class of languages for which membership can be verified quickly.
+
+If P = NP, any polynomially verifiable problem would be polynomially decidable.
+
+\[
+\NP \subseteq \EXPTIME = \bigcup_k \TIME(2^{n^k})
+\]
+
+\subsection{NP-Completeness (NPC)}
+
+The first NPC problem is the \textbf{satisfiability problem}. A Boolean formula is \textbf{satisfiable} if some assignment of 0s and 1s to the variables makes the formula evaluate to 1.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.27}
+
+\medskip
+$SAT \in \P$ iff P = NP.
+\[
+SAT = \{ \desc{\phi } \mid \text{$\phi$ is a satisfiable Boolean formula}\}
+\]
+\end{shaded}
+
+\subsubsection{Polynomial Time Reducibility}
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.28}
+
+\medskip
+A function $f: \Sigma^* \rightarrow \Sigma^*$ is a \textbf{polynomial time computable function} if some polynomial time Turing machine $M$ exists that halts with just $f(w)$ on its tape, when started on any input $w$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.29}
+
+\medskip
+Language $A$ is \textbf{polynomial time mapping reducible}, to language $B$, written $A \leq_\P B$, if a polynomial time computable function $f :\Sigma^* \rightarrow \Sigma^*$ exists, where for every $w$,
+\[
+w\in A \Leftrightarrow f(w) \in B
+\]
+The function $f$ is called the \textbf{polynomial time reduction} of $A$ to $B$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.31}
+
+\medskip
+If $A \leq_\P B$ and $B \in \P$, then $A \in \P$.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ be the polynomial time algorithm deciding $B$ and $f$ be the polynomial time reduction from $A$ to $B$. Construct a polynomial time TM $N$ deciding $A$ as follows.
+
+$N$ = On input $w$:
+\begin{enumerate}
+\item Compute $f(w)$.
+\item Run $M$ on $f(W)$ and output whatever $M$ outputs.
+\end{enumerate}
+$N$ runs in poly time because each of its two stages runs in poly time.
+\end{proof}
+\end{mdframed}
+
+A \textbf{literal} is a Boolean variable or a negated Boolean variable ($x$ or $\overline{x}$). A \textbf{clause} is several literals connected with $\lor$s ($x_1 \lor \overline{x_2} \lor x_3$). A Boolean formula is in \textbf{conjunctive normal form}, if it comprises several clauses connected with $\land$s. It is a \textbf{3cnf-formula} if all the clauses have three literals. If an assignment satisfies a cnf-formula, each clause must contain at least one literal that evaluates to 1.
+
+\label{lang:3SAT_CLIQUE}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.32}
+
+\medskip
+$3SAT$ is polynomial time reducible to $CLIQUE$.
+\[
+3SAT = \{ \desc{\phi}  \mid \text{$\phi$ is a satisfiable 3cnf-formula}\}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+The polynomial time reduction $f$ converts formulas to graphs. In the constructed graphs, cliques of a specified size correspond to satisfying assignments of the formula.
+
+The reduction $f$ generates the string $\desc{G, k}$, where $G$ is an undirected graph defined as follows.
+
+The nodes in $G$ are organized into $k$ groups of three nodes each called the \textbf{triples}, $t_1, \ldots, t_k$. Each triple corresponds to one of the clauses in $\phi$, and each node in a triple corresponds to a literal in the associated clause. Label each node of $G$ with its corresponding literal in $\phi$.
+
+No edge between nodes in the same triple, and no edge between two nodes with contradictory labels.
+
+Show that $\phi$ is satisfiable iff $G$ has a k-clique.
+
+Suppose that $\phi$ has a satisfying assignment. At least one literal is true in every clause. In each triple of $G$, select one node corresponding to a true literal in the satisfying assignment. If more than one literal is true in a particular clause, chose arbitrarily among them. The nodes selected form a k-clique. Each pair of selected nodes is joined by an edge because no pair fits one of the exceptions described previously.
+
+Suppose that $G$ has a k-clique. No two of the clique's nodes occur in the same triple. Each of the k triples contains exactly one of the k clique nodes. Assign truth values to the variables of $\phi$ so that each literal labeling a clique node is make true. This assignment satisfies $\phi$ because each triple contains a clique node and each clause contains a literal that is assigned 1.
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Definition 7.34}
+
+\medskip
+A language $B$ is \textbf{NP-complete} if it satisfies two conditions:
+\begin{enumerate}
+\item $B \in \NP$.
+\item $\forall A \in \NP$, $A \leq_\P B$.
+\end{enumerate}
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.35}
+
+\medskip
+If $B \in \NPC$ and $B \in \P$, then P = NP.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Use polynomial time reduction.
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 7.36}
+
+\medskip
+If $B\in \NPC$ and $B \leq_\P C$ for $C \in \NP$, then $C \in \NPC$.
+\end{shaded}
+
+
+\begin{mdframed}
+\begin{proof}
+Already know that $C \in \NP$, just need to show that every $A \in \NP$ is poly time reducible to $B$. Since $B \in \NPC$, every language in NP is poly time reducible to $B$, and $B$ is poly time reducible to $C$. Sine poly time reductions compose, hence every language in NP is poly time reducible to  $C$ and $C \in \NPC$.
+\end{proof}
+\end{mdframed}
+
+\subsubsection{The Cook-Levin Theorem}
+
+\label{lang:SAT}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.37}
+
+\medskip
+$SAT$ is NP-complete.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+It is easy to show that $SAT \in \NP$. An NDTM in poly time can guess an assignment to a given formula $\phi$ and accept if it satisfies $\phi$.
+
+\medskip
+Then show that any language in NP is poly time reducible to $SAT$. Construct a poly time reduction for each language $A$ in NP to $SAT$. The reduction for $A$ takes a string $w$ and produces a Boolean formula $\phi$ that simulates the NP machine for $A$ on input $w$.
+
+\medskip
+The formula $\phi$ is the AND of four parts: $\phi_\text{cell} \land \phi_\text{start} \land \phi_\text{move} \land \phi_\text{accept}$.
+
+Let $C = Q \cup \Gamma \cup \{ \#\}$.
+
+Formula $\phi_\text{cell}$ ensures that the assignment turns on exactly one variable for each cell.
+\[
+\phi_\text{cell} = \bigwedge_{1 \leq i, j \leq n^k} 
+\left[\left( \bigvee_{s\in C} x_{ijs}\right)
+\land \left( \bigwedge_{s,t\in C, s\neq t} 
+(\overline{x_{ijs}} \lor \overline{x_{ijt}})\right) \right]
+\]
+
+The first part says that at least one variable is turned on in the corresponding cell. The second part says that no more than one variable is turned on (in each pair of variables, both cannot be on at the same time).
+
+Formula $\phi_\text{start}$ ensures that the first row of the table is the starting configuration of $N$ on $w$.
+\begin{align*}
+\phi_\text{start} = &x_{11\#} \land x_{12q_0} \land \\
+& x_{13w_1} \land \ldots \land x_{1(n+2)w_n}  \land \\
+& x_{1(n+3)\sqcup} \land \ldots \land x_{1(n^k-1)\sqcup} \land x_{1n^k\#}
+\end{align*}
+
+Formula $\phi_\text{accept}$ guarantees that an accepting configuration occurs in the tableau.
+\[
+\phi_\text{accept} = \bigvee_{1\leq i, j \leq n^k} x_{ijq_\text{accept}}
+\]
+
+Formula $\phi_\text{move}$ guarantees that each row of the tableau corresponds to a configuration that legally follows the preceding row's configuration according to $N$'s rules. It does so by ensuring that each $2\times 3$ window of cells is legal.
+\[
+\phi_\text{move} = \bigwedge_{1 \leq i < n^k, 1 < j < n^k} 
+(\text{the $(i, j)$-window is legal})
+\]
+
+The tableau is $n^k \times n^k$ so it contains $n^{2k}$ cells. Each cell has $l$ variables where $l = |C|$. $l$ depends only on the TM $N$ but not on the length of the input $n$, the total number of variables is $O(n^{2k})$.
+
+Formula $\phi_\text{cell}$ contains a fixed size fragment of the formula for each cell, so its size is $O(n^{2k})$.
+
+Formula $\phi_\text{start}$ has a fragment for each cell in the top row, so its size is $O(n^k)$.
+
+Formula $\phi_\text{move}$ and $\phi_\text{accept}$ each contain a fixed-size fragment of the formula for each cell, so there size is $O(n^{2k})$. 
+
+Thus, $\phi$'s total size is $O(n^{2k})$.
+
+Each component of the formula is composed of many nearly identical fragments, which differ only at the indices. We may easily construct a reduction that produces $\phi$ in poly time from the input $w$.
+\end{proof}
+\end{mdframed}
+
+{\color{blue} NP-completeness can usually be proved with a poly time reduction from a language that is already known to be NP-complete. It is usually easier to reduce from $3SAT$ instead of $SAT$.}
+
+\label{lang:3SAT_NPC}
+\begin{shaded}
+\textbf{ITOC - Corollary 7.42}
+
+\medskip
+$3SAT$ is NP-complete.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Obviously $3SAT \in \NP$. We could show that $SAT \leq_\P 3SAT$. Instead, modify the proof of Cook-Levin Theorem so that it directly produces a formula in CNF with 3 literals per clause.
+
+First convert each formula to CNF. Only $\phi_\text{move}$ is not in CNF, we can replace an OR of ANDs with an equivalent AND of ORs. Doing so my increase the size of each subformula, but only increase the total size by a constant factor.
+
+In each clause that currently has one or two literals, we replicate one of the literals until the total number is three. In each clause that has more than three literals, we split it into several clauses and add additional variables to preserve the original.
+\end{proof}
+\end{mdframed}
+
+\subsection{Additional NP-Complete Problems}
+
+When constructing a poly time reduction from $3SAT$ to a language, we look for structures in that language that can simulate the variables and clauses in Boolean formulas. Such structures are called \textbf{gadgets}.
+
+\begin{shaded}
+\textbf{ITOC - Corollary 7.43}
+
+\medskip
+$CLIQUE$ is NP-complete.
+\end{shaded}
+
+\subsubsection{The Vertex Cover Problem}
+
+\label{lang:VERTEXCOVER_NP}
+\label{lang:VERTEXCOVER_NPC}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.44}
+
+\medskip
+$VERTEXCOVER$ is NP-complete.
+\begin{align*}
+VERTEXCOVER = \{ \desc{G, k} \mid &\text{$G$ is an undirected graph} \\
+& \text{that has a k-node vertex cover}\}
+\end{align*}
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+$VERTEXCOVER \in \NP$, a certificate is simply a vertex cover of size $k$.
+
+\medskip
+Then show that $3SAT \leq_\P VERTEXCOVER$. The reduction converts a 3cnf-formula $\phi$ into a graph $G$ and a number $k$, so that $\phi$ is satisfiable iff $G$ has a vertex cover with $k$ nodes.
+
+\medskip
+The variable gadget contains two nodes connected by an edge. One of these nodes must appear in the vertex cover. For each variable $x$ in $\phi$, produce an edge connecting two nodes $x$ and $\overline{x}$. Setting $x$ to TRUE will select the node $x$ for the vertex cover.
+
+The clause gadget contains three nodes and additional edges so that any vertex cover must include at least two of the nodes, or possibly all three. Nodes in the gadget are labeled with the three literals of the clause. These three nodes are connected to each other and to the nodes in the variable gadgets that have the identical labels.
+
+Finally chose $k$ so that vertex cover has one node per variable gadget and two nodes per clause gadget. Total number of nodes is $2m + 3l$ and $k = m + 2l$.
+
+\medskip
+To show this reduction works. Start with a satisfying assignment. First put the nodes of the variable gadgets that correspond to the true literals in the assignment into the vertex cover. Then, select one true literal in every clause and put the remaining two nodes from every clause gadget into the vertex cover. They cover all edges because every variable gadget edge is covered, all three edges within every clause gadget are covered, and all edges between variable and clause gadgets are covered.
+
+If $G$ has a vertex cover with $k$ nodes, show that $\phi$ is satisfiable. Take the nodes of the variable gadgets that are in the vertex cover and assign TRUE to the corresponding literals. This satisfies $\phi$ because each of the three edges connecting the variable gadgets with each clause gadget is covered and only two nodes of the clause are in the vertex cover. Therefore, one of the edges must be covered by a node from a variable gadget and so that satisfies the corresponding clause.
+\end{proof}
+\end{mdframed}
+
+\subsubsection{The Hamiltonian Path Problem}
+
+\label{lang:HAMPATH_NPC}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.46}
+
+\medskip
+$HAMPATH$ is NP-complete.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that $3SAT \leq_\P HAMPATH$.
+
+Convert 3cnf-formulas to graphs in which Hamiltonian paths correspond to satisfying assignments of the formula. The variable gadget is a diamond structure that can be traversed in either of two ways, corresponding to the two truth settings. The clause gadget is a node.
+
+\medskip
+Represent each variable $x_i$ with a diamond-shaped structure that contains a horizontal row of nodes.
+\end{proof}
+\end{mdframed}
+
+\label{lang:UHAMPATH_NPC}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.55}
+
+\medskip
+$UHAMPATH$ is NP-complete.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that $HAMPATH \leq_\P UHAMPATH$.
+
+\medskip
+The reduction takes a directed graph $G$ with nodes $s$ and $t$, and constructs and undirected graph $G'$ with nodes $s'$ and $t'$. Graph $G$ has a Hamiltonian path $s$ to $t$ iff $G'$ has a Hamiltonian path from $s'$ to $t'$. 
+
+\medskip
+Each node $u$ of $G$, except for $s$ and $t$ is replaced by a triple of nodes $u^\text{in}, u^\text{mid}, u^\text{out}$ in $G'$. Nodes $s$ and $t$ in $G$ are replaced by nodes $s^\text{out} = s'$ and $t^\text{in} = t'$ in $G'$. Edges of two types appear in $G'$. First, edges connect $u^\text{mid}$ with $u^\text{in}$ and $u^\text{out}$. Second, an edge connects $u^\text{out}$ with $v^\text{in}$ if $(u, v) \in E_G$.
+
+\medskip
+Assume $s, u_1, u_2, \ldots, u_k, t$ is a Hamiltonian path $P$ in $G$, then the corresponding Hamiltonian path $P'$ in $G'$ is $s^\text{out}, u_1^\text{in}, u_1^\text{mid}, u_1^\text{mid}, \ldots, t^\text{in}$.
+
+To show the other direction, claim that any Hamiltonian path in $G'$ from $s^\text{out}$ to $t^\text{in}$ must go from a triple of nodes to a triple of nodes, except for the start and finish. Any such path has a corresponding Hamiltonian path in $G$. starting at node $s^\text{out}$. Observe that the next node in the path must be $u_i^\text{in}$ for some $i$ because only those nodes are connected to $s^\text{out}$. The next node must be $u_i^\text{mid}$ because no other way is available to include $u_i^\text{mid}$ in the Hamiltonian path. After $u_i^\text{mid}$ comes $u_i^\text{out}$ because that is the only other node to which $u_i^\text{mid}$ is connected. The next node must be $u_j^\text{in}$ for some $j$ because no other available node is connected to $u_i^\text{out}$. The argument then repeats until $t^\text{in}$ is reached.
+\end{proof}
+\end{mdframed}
+
+
+\subsubsection{The Subset Sum Problem}
+
+\label{lang:SUBSETSUM_NPC}
+\begin{shaded}
+\textbf{ITOC - Theorem 7.56}
+
+\medskip
+$SUBSETSUM$ is NP-complete.
+\end{shaded}

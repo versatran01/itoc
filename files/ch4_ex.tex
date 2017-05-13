@@ -1,0 +1,249 @@
+\subsection{Exercises}
+\label{lang:EQDFAREX_DCDB}
+\textbf{4.2} Consider the problem of determining whether a DFA and a regular expression are equivalent. Express this problem as a language and show that it is decidable.
+\begin{mdframed}
+\begin{proof}
+Let 
+\[
+EQ_{\DFA,\REX} = \{\desc{A, R} \mid \text{$A$ is a DFA, $R$ is a regular expression and $L(A) = L(R)$} \} 
+\]
+
+The following TM $E$ decides $EQ_{\DFA,\REX}$.
+
+\medskip
+$E$ = On input $\desc{A, R}$
+\begin{enumerate}
+\item Convert REX $R$ to an equivalent DFA $D$ using the procedure given in the book.
+\item Use the TM $M$ for deciding $EQ_\DFA$ given in the book on input $\desc{A, D}$.
+\item If $M$ accepts, \textit{accept}. If $M$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:ALLDFA_DCDB}
+\textbf{4.3} Let
+\[
+ALL_\DFA = \{ \desc{A} \mid \text{$A$ is an DFA and $L(A) = \Sigma^*$}\}
+\]
+Show that $ALL_\DFA$ is decidable. 
+\begin{mdframed}
+\begin{proof}
+Construct a TM $L$ that decides $ALL_\DFA$.
+
+\medskip
+$L$ = On input $\desc{A}$ where $A$ is a \DFA:
+\begin{enumerate}
+\item Construct DFA $B$ that recognizes $\overline{L(A)}$.
+\item Run $E_\DFA$ decider $T$ on input $\desc{B}$.
+\item If $T$ accepts, \textit{accept}. If $T$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:ETMC_TR}
+\textbf{4.5} Let
+\[
+E_\TM = \{\desc{M} \mid \text{$M$ is a TM and $L(M) = \emptyset$}\}
+\]
+Show that $\overline{E_\TM}$, the complement of $E_\TM$, is Turing-recognizable.
+
+\begin{mdframed}
+\begin{proof}
+\[
+\overline{E_\TM} = \{\desc{M} \mid \text{$M$ is a TM and $L(M) \neq \emptyset$}\}
+\]
+Let $s_1, s_2, \ldots$ be a list of all strings in $\Sigma^*$ in string order. The following TM $M'$ recognizes $\overline{E_\TM}$.
+
+\medskip
+$M'$ = On input $\desc{M}$, where $M$ is a TM:
+\begin{enumerate}
+\item Repeat the following for $i = 1, 2, 3, \ldots$
+\item $\quad$ Run $M$ for $i$ steps on each input $s_1, s_2, \ldots, s_i$.
+\item $\quad$ If $M$ has accepted any of these, \textit{accept}. 
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\label{lang:INFINITEDFA_DCDB}
+\textbf{4.10} Let 
+\[
+INFINITE_\DFA = \{\desc{A} \mid \text{$A$ is a DFA and $L(A)$ is an infinite language} \}
+\]
+Show that $INFINITE_\DFA$ is decidable.
+
+\begin{mdframed}
+\begin{proof}
+Construct TM $I$ that decides $INFINITE_\DFA$.
+
+\medskip
+$I$ = On input $\desc{A}$, where $A$ is DFA:
+\begin{enumerate}
+\item Let $k$ be the number of states of $A$.
+\item Construct DFA $D$ that accepts all strings of length $k$ or more.
+\item Construct DFA $M$ such that $L(M) = L(A) \cap L(D)$.
+\item Use $E_\DFA$ decider to test whether $L(M)$ is $\emptyset$ .
+\item Output the opposite of whatever $T$ outputs.
+\end{enumerate}
+
+If $A$ accepts infinitely many strings, it must accept strings longer than $k$, thus $L(M) \neq \emptyset$ and $T$ will output $reject$, therefore $I$ will accept.
+
+If $L(A)$ is finite, then it cannot have strings longer than $k$, thus $L(M) = \emptyset$ and $T$ will accept, therefore $I$ will reject.
+\end{proof}
+\end{mdframed}
+
+\textbf{4.12} Let 
+\[
+A = \{ \desc{M} \mid \text{$M$ is an DFA that doesn't accept strings containing an odd number of 1s}\}
+\]
+Show that $A$ is decidable.
+\begin{mdframed}
+\begin{proof}
+Construct a TM $D$ that decides $A$.
+
+\medskip
+$D$ = On input $\desc{M}$, where $M$ is a DFA:
+\begin{enumerate}
+\item Construct a DFA $O$ that accepts every string containing an odd number of 1s.
+\item Construct a DFA $B$ such that $L(B) = L(M) \cap L(O)$.
+\item Use $E_\DFA$ decider $T$ to test whether $L(B) = \emptyset$.
+\item Output whatever $T$ outputs.
+\end{enumerate}
+
+If $M$ accepts strings containing an odd number of 1s, then $L(B)$ will not be empty, and $T$ will reject, thus $D$ will also reject.
+
+If $M$ doesn't accept strings containing an odd number of 1s, then $L(B)$ will be empty, and $T$ will accept, thus $D$ will also accept.
+\end{proof}
+\end{mdframed}
+
+\textbf{4.13} Let 
+\[
+A = \{\desc{R,S} \mid \text{$R$ and $S$ are REXs and $L(R) \subseteq L(S)$}\}
+\]
+Show that $A$ is decidable.
+
+\begin{mdframed}
+\begin{proof}
+$L(R) \subseteq L(S)$ iff $L(R) \cup \overline{L(S)} = \emptyset$. Construct a TM $M$ that decides $A$.
+
+\medskip
+$M$ = On input $\desc{R, S}$, where $R$ and $S$ are REXs:
+\begin{enumerate}
+\item Construct a DFA $E$ such that $L(E) = L(R) \cup \overline{L(S)}$.
+\item Run $E_\DFA$ decider on $\desc{E}$ to test whether $L(E) = \emptyset$.
+\item Output whatever $T$ outputs.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{4.16} Let
+\begin{align*}
+A = \{\desc{R} \mid &\text{$R$ is a REX describing a language} \\
+& \text{containing at least one string $w$ that has 111 as a substring}\}
+\end{align*}
+Show that $A$ is decidable.
+
+\begin{mdframed}
+\begin{proof}
+Construct a TM $X$ that decides $A$.
+
+\medskip
+$X$ = On input $\desc{R}$ where $R$ is a regular expression:
+\begin{enumerate}
+\item Construct DFA $E$ that accepts $\Sigma^*111\Sigma^*$.
+\item Construct DFA $B$ such that $L(B) = L(R) \cap L(E)$.
+\item Use $E_\DFA$ decider on $\desc{B}$ to test whether $L(B) = \emptyset$.
+\item Output the opposite of whatever $T$ outputs.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{4.17} Prove that $EQ_\DFA$ is decidable by testing the two DFAs on all strings up to a certain size. Calculate a size that works.
+\begin{mdframed}
+\begin{proof}
+For any DFAs $A$ and $B$, $L(A) = L(B)$ iff $A$ and $B$ accept the same strings up to length $mn$, where $m$ and $n$ are the numbers of states of $A$ and $B$, respectively. 
+
+If $L(A) = L(B)$, $A$ and $B$ will accept the same strings.
+
+If $L(A) \neq L(B)$, wee need to show that the languages differ on some string $s$ of length at most $mn$. Let $t$ be a shortest string on which the language differ, where $l = |t|$. If $l \leq mn$, then we are done. If not, consider the sequence of states $q_0, q_1, \ldots, q_l$ that $A$ enters on input $t$, and the sequence of states $r_0, r_1, \ldots, r_l$ that $B$ enters on input $t$. Because $A$ has $m$ states and $B$ has $n$ states, only $mn$ distinct pairs $(q, r)$ exist where $q$ is a state of $A$ and $r$ is a state of $B$. By the pigeon hole principle, two pairs of states $(q_i, r_i)$ and $(q_j, r_j)$ must be identical. If we remove the portion from $i$ to $j-1$ we obtain a shorter string on which $A$ and $B$ behave as they would on $t$, Hence we have found a shorter string on which the two languages differ, even though $t$ was supposed to be shortest. Hence $t$ must be no longer than $mn$.
+\end{proof}
+\end{mdframed}
+
+\textbf{4.18} Let $C$ be a language. Prove that $C$ is Turing-recognizable iff a decidable language $D$ exists such that $C = \{ x \mid \exists y(\desc{x, y} \in D)\}$
+
+\begin{mdframed}
+\begin{proof}
+Assume that a decidable language $D$ exists. 
+
+A TM recognizing $C$ operates on input $x$ by going through each possible string $y$ and testing whether $\desc{x,y}\in D$. If such a $y$ is ever found, \textit{accept}; if not, just keep searching.
+
+\medskip
+Assume that $C$ is recognized by TM $M$. 
+
+Define a language $D$ to be $\{ \desc{x, y} \mid \text{$M$ accepts $x$ withing $|y|$ steps}\}$. Language $D$ is decidable, and if $x \in C$ then $M$ accepts $x$ within some number of steps, so $\desc{x, y} \in D$ for any sufficiently long $y$, but if $x \not \in C$ then $\desc{x, y}\not in D$ for any $y$.
+\end{proof}
+\end{mdframed}
+
+\textbf{4.20} Let $A$ and $B$ be two disjoint languages. Say that languages $C$ separates $A$ and $B$ if $A\subseteq C$ and $B \subseteq \overline{C}$. Show that any two disjoint co-Turing-recognizable languages are separable by some decidable languages.
+
+\begin{mdframed}
+\begin{proof}
+Let $A$ and $B$ be two languages such that $A\cap B = \emptyset$, and $\overline{A}$ and $\overline{B}$ are recognizable. Let $J$ recognize $\overline{A}$ and $K$ recognize $\overline{B}$. Construct TM $T$ such that $C=L(T)$ separates $A$ and $B$.
+
+\medskip
+$T$ = On input $w$:
+\begin{enumerate}
+\item Simulate $J$ and $K$ on $w$ by alternating the steps of the two TMs
+\item If $J$ accepts first, \textit{reject}. If $K$ accepts first, \textit{accept}.
+\end{enumerate}
+$T$ will halt because $\overline{A} \cup \overline{B} = \Sigma^*$. So either $J$ or $K$ will accept $w$ eventually. $A\subseteq C$ because if $w\in A$, $w$ will not be recognized by $J$ and will be accept by $K$ first. $B \subseteq \overline{C}$ because ,if $w \in B$, $w$ will not be recognized by $K$ and will be accepted by $J$ first. Therefore, $C$ separates $A$ and $B$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:WWRDFA_DCDB}
+\textbf{4.21} Let
+\[
+WWR_\DFA = S = \{ \desc{M} \mid\text{$M$ is a DFA that accepts $w^R$ whenever it accepts $w$}\}
+\]
+Show that $S$ is decidable.
+
+\begin{mdframed}
+\begin{proof}
+For any language $A$, let $A^R = \{w^R \mid w \in A\}$. If $\desc{M}\in S$, then $L(M) = L(M)^R$. The following TM $T$ decides $S$.
+
+\medskip
+$T$ = On input $\desc{M}$, where $M$ is a DFA
+\begin{enumerate}
+\item Construct DFA $N$ that recognizes $L(M)^R$
+\item Run $EQ_\DFA$ decider $F$ on $\desc{M, N}$.
+\item Output whatever $F$ outputs.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{4.23} Say that an NFA is \textbf{ambiguous} if it accepts some string along two different computation branches. Let $AMBIG_\NFA = \{\desc{N} \mid \text{$N$ is an ambiguous NFA} \}$. Show that $AMBIG_\NFA$ is decidable. (Suggestion: One elegant way to solve this problem is to construct a suitable DFA and then run $E_\DFA$ on it.)
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{4.30}  Let $A$ be a Turing-recognizable language consisting of descriptions of Turing machines, $\{\desc{M_1}, \desc{M_2}, \ldots\}$ where every $M_i$ is a decider. Prove that some decidable language $D$ is not decided by any decider $M_i$ whose description appears in $A$.
+\begin{mdframed}
+\begin{proof}
+Since $A$ is Turing-recognizable, then there exists an enumerator $E$ that enumerates it. Consider $\desc{M_i}$ as the ith output of $E$. Assume $s_1, s_2, \ldots, s_i$ are all possible strings of $\{0,1\}^*$. Build a TM $D$ as follow:
+
+\medskip
+$D$ = On input $m$
+\begin{enumerate}
+\item Check if $m = s_i$.
+\item Use enumerator $E$ to enumerate $\desc{M_1}, \desc{M_2}, \ldots, \desc{M_i}$.
+\item Run $M_i$ on input $m$.
+\item If $M_i$ accept, \textit{reject}; if $M_i$ reject, \textit{accept}.
+\end{enumerate}
+\end{proof}
+
+Since $D$ is a decider and it is different from every $M_i$, it is not in $A$.
+\end{mdframed}

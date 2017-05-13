@@ -1,0 +1,315 @@
+\section{Reducibility}
+
+A \textbf{reduction} is a way of converting one problem to another problem in such a way that a solution to the second problem can be used to solve the first problem.
+
+Reducibility always involves two problems, $A$ and $B$. If $A$ reduces to $B$, we can use a solution to $B$ to solve $A$.
+
+When $A$ is reducible to $B$, solving $A$ cannot be harder than solving $B$ because a solution to $B$ gives a solution to $A$.
+
+{\color{blue} If A is reducible to $B$ and $B$ is decidable, $A$ is also decidable. If $A$ is undecidable and reducible to $B$, $B$ is undecidable.}
+
+\subsection{Undecidable Problems from Language Theory}
+
+Use the undecidability of $A_\TM$ to prove the undecidability of the halting problem by reducing $A_\TM$ to $HALT_\TM$.
+
+
+\label{lang:HALTTM_UDCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 5.1}
+
+\medskip
+$HALT_\TM$ is undecidable
+\[
+HALT_\TM = \{\desc{M, w} \mid \text{$M$ is a TM and $M$ halts on input $w$}\}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Proof by contradiction. Assume that $HALT_\TM$ is decidable and show that $A_\TM$ is decidable. The key idea is to show that $A_\TM$ is reducible to $HALT_\TM$.
+
+Assume that a TM $R$ decides $HALT_\TM$. Construct TM $S$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$, an encoding of a TM $M$ and a string $w$:
+\begin{enumerate}
+\item Run TM $R$ on input $\desc{M, w}$.
+\item If $R$ rejects, \textit{reject}.
+\item If $R$ accepts, simulate $M$ on $w$ until it halts.
+\item If $M$ accepts, \textit{accept}; if $M$ rejects, \textit{reject}.
+\end{enumerate}
+
+If $R$ decides $HALT_\TM$, then $S$ decides $A_\TM$. But $A_\TM$ is undecidable, $HALT_\TM$ is also undecidable.
+\end{proof}
+\end{mdframed}
+
+We will prove a language undecidable by reducing $A$ to that language.
+
+\label{lang:ETM_UDCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 5.2}
+
+\medskip
+$E_\TM$ is undecidable.
+\[
+E_\TM = \{ \desc{M} \mid M \text{ is a TM and } L(M) = \emptyset \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Assume that $E_\TM$ is decidable and then show that $A_\TM$ is decidable, a contradiction. We modify $\desc{M}$ to guarantee that $M$ rejects all strings except $w$, but on input $w$ it works as usual. Then use $R$ to determine whether the modified machine recognizes the empty language. The only string the machine can now accept is $w$, so its language will be nonempty iff it accepts $w$.
+
+The modified machine $M_1$ is 
+
+\medskip
+$M_1$ = "On input $x$:
+\begin{enumerate}
+\item If $x \neq w$, \textit{reject}.
+\item If $x = w$, run $M$ on input $w$ and \textit{accept} if $M$ does.
+\end{enumerate}
+
+Then assume TM $R$ decides $E_\TM$ and construct TM $S$ that decides $A_\TM$ as follows.
+
+\medskip
+$S$ = On input $\desc{M, w}$
+\begin{enumerate}
+\item Use the description of $M$ and $w$ to construct the TM $M_1$.
+\item Run $R$ on input $\desc{M_1}$.
+\item If $R$ accepts, \textit{reject}; if $R$ rejects, \textit{accept}. 
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Theorem 5.3}
+
+\label{lang:REGULARTM_UDCDB}
+\medskip
+$REGULAR_\TM$ is undecidable.
+\[
+REGULAR_\TM = \{\desc{M} \mid M \text{ is a TM and } L(M) \text{ is a regular language}\}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Assume that $REGULAR_\TM$ is decidable by a TM $R$ and use this to construct a TM $S$ that decides $A_\TM$.
+
+The idea is for $S$ to take its input $\desc{M, w}$ and modify $M$ so that the resulting TM recognizes a regular language iff $M$ accepts $w$. Call this machine $M_2$.
+
+{\color{blue} $M_2$ is \textbf{not} constructed for the purposes of actually running it on some input.} 
+
+We construct $M_2$ only for the purpose of feeding its description into the decider for $REUGLAR_\TM$. Once this decider returns its answer, we can use it to obtain the answer to whether $M$ accepts $w$.
+
+Let $R$ be a TM that decides $REGULAR_\TM$ and construct TM $S$ to decide $A_\TM$.
+
+\medskip
+$S$ = On input $\desc{M, w}$
+\begin{enumerate}
+\item Construct TM $M_2$.
+
+$M_2$ = On input $x$:
+\begin{enumerate}
+\item If $x$ has the form $0^n1^n$, \textit{accept}.
+\item If $x$ does not have this from, run $M$ on input $w$ and \textit{accept} if $M$ accepts $w$.
+\end{enumerate}
+\item Run $R$ on input $\desc{M_2}$
+\item If $R$ accepts, \textit{accept}; if $R$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+Rice's theorem, states that determining \textbf{any property} of the languages recognized by Turing machines is undecidable.
+
+\label{lang:EQTM_UDCDB}
+\begin{shaded}
+\textbf{ITOC - Theorem 5.4}
+
+\medskip
+$EQ_\TM$ is undecidable.
+\[
+EQ_\TM = \{\desc{M_1, M_2} \mid \text{$M_1$ and $M_2$ are TMs and }  L(M_1) = L(M_2) \}
+\]
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Show that if $EQ_\TM$ were decidable, $E_\TM$ also would be decidable by giving a reduction from $E_\TM$ to $EQ_\TM$.
+
+If one of these languages happens to be $\emptyset$, we end up with the problem of determining whether the language of the other machine is empty.
+
+Let TM $R$ decide $EQ_\TM$ and construct TM $S$ to decide $E_\TM$.
+
+
+\medskip
+$S$ = On input $\desc{M}$:
+\begin{enumerate}
+\item Run $R$ on input $\desc{M, M_1}$, where $M_1$ is a TM that rejects all inputs.
+\item If $R$ accepts, \textit{accept}; if $R$ rejects, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{Mapping Reducibility}
+
+Being able to reduce $A$ to $B$ by mapping reducibility means that a computable function exists that converts instances of $A$ to $B$. If we have such a conversion function (reduction), we can solve $A$ with a solver for $B$.
+
+\subsubsection{Computable Functions}
+
+\begin{shaded}
+\textbf{ITOC - Definition 5.17}
+
+\medskip
+A function $f : \Sigma^* \rightarrow \Sigma^*$ is a \textbf{computable function} if some Turing machine $M$, on every input $w$, hatls with just $f(w)$ on its tape.
+\end{shaded}
+
+\subsubsection{Formal Definition of Mapping Reducibility}
+
+\begin{shaded}
+\textbf{ITOC - Definition 5.20}
+
+\medskip
+Language $A$ is \textbf{mapping reducible} to language $B$, written $A \leq_m B$, if there is a computable function $f: \Sigma^* \rightarrow\Sigma^*$, where for every $w$
+\[
+w \in A \Leftrightarrow f(w) \in B
+\]
+The function $F$ is called the \textbf{reduction} from $A$ to $B$.
+\end{shaded}
+
+To test whether $w\in A$, we use the reduction $f$ to map $w$ to $f(w)$ and test whether $f(w) \in B$.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 5.22}
+
+\medskip
+If $A\leq_m B$ and $B$ is decidable, then $A$ is decidable.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+Let $M$ be the decider for $B$ and $f$ be the reduction from $A$ to $B$. We construct a decider $N$ for $A$.
+
+\medskip
+$N$ = On input $w$:
+\begin{enumerate}
+\item Compute $f(w)$
+\item Run $M$ on input $f(w)$ and output whatever $M$ outputs.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 5.23}
+
+\medskip
+If $A \leq_m B$ and $A$ is undecidable, then $B$ is undecidable.
+\end{shaded}
+
+We used a reduction from $A_\TM$ to prove that $HALT_\TM$ is undecidable. This reduction showed how a decider for $HALT_\TM$ could be used to give a decider for $A_\TM$. We can also use a mapping reduction from $A_\TM$ to $HALT_\TM$. We need to present a computable function $f$ that takes input of th form $\desc{M, w}$ and returns output of the form $\desc{M', w'}$, where
+\[
+\desc{M, w} \in A_\TM \text{ iff }  \desc{M', w'} \in HALT_\TM
+\]
+
+The following machine $F$ computes a reduction $f$.
+
+\medskip
+$F$ = On input $\desc{M, w}$:
+\begin{enumerate}
+\item Construct the following machine $M'$.
+
+$M'$ = On input $x$:
+\begin{enumerate}
+\item Run $M$ on $x$.
+\item If $M$ accepts, \textit{accept}.
+\item If $M$ rejects, enter a loop.
+\end{enumerate}
+\end{enumerate}
+
+In general, when we describe a TM that computes a reduction from $A$ to $B$, improperly formed inputs are assumed to map to strings outside of $B$.
+
+No such reduction exists from $A_\TM$ to $E_\TM$.
+
+We can also use mapping reducibility to show that problems are not Turing-recognizable.
+
+\begin{shaded}
+\textbf{ITOC - Theorem 5.28}
+
+\medskip
+If $A \leq_m B$ and $B$ is Turing-recognizable, then $A$ is Turing-recognizable.
+\end{shaded}
+
+\begin{shaded}
+\textbf{ITOC - Corollary 5.29}
+
+\medskip
+If $A \leq_m B$ and $A$ is not Turing-recognizable, then $B$ is not Turing-recognizable.
+\end{shaded}
+
+In a typical application of this corollary, let $A$ be $\overline{A_\TM}$ and it is not Turing-recognizable. Mapping reducibility implies that $A \leq_m B$ means the same as $\overline{A} \leq_m \overline{B}$. To prove that $B$ isn't recognizable, we show taht $A_\TM \leq_m \overline{B}$.
+
+
+\label{lang:EQTM_NTR}
+\label{lang:EQTMC_NTR}
+\begin{shaded}
+\textbf{ITOC - Theorem 5.30}
+
+\medskip
+$EQ_\TM$ is neither Turing-recognizable nor co-Turing-recognizable.
+\end{shaded}
+
+\begin{mdframed}
+\begin{proof}
+First show that $EQ_\TM$ is not Turing-recognizable by showing that $A_\TM$ is reducible to $\overline{EQ_\TM}$. The reducing function $f$ works as follows.
+
+\medskip
+$F$ = On input $\desc{M, w}$
+\begin{enumerate}
+\item Construct the following two machines, $M_1$ and $M_2$.
+
+$M_1$ = On any input:
+\begin{enumerate}
+\item \textit{Reject}.
+\end{enumerate}
+
+$M_2$ = On any input:
+\begin{enumerate}
+\item Run $M$ on $w$. If it accepts, \textit{accept}.
+\end{enumerate}
+
+\item Output $\desc{M_1, M_2}$.
+\end{enumerate}
+
+$M_1$ accepts nothing. If $M$ accepts $w$, $M_2$ accepts everything, and so the two machines are note equivalent. Conversely, if $M$ doesn't accept $w$, $M_2$ accepts nothing, and they are equivalent.
+
+\medskip
+To show that $\overline{EQ_\TM}$ is not Turing-recognizable, we give a reduction from $A_\TM$ to the complement of $\overline{EQ_\TM}$, which is $EQ_\TM$. Hence we show that $A_\TM \leq_m EQ_\TM$.
+
+\medskip
+$G$ = On input $\desc{M, w}$:
+\begin{enumerate}
+\item Construct the following two machines, $M_1$ and $M_2$.
+
+$M_1$ = On any input:
+\begin{enumerate}
+\item \textit{Accept}.
+\end{enumerate}
+
+$M_2$ = On any input:
+\begin{enumerate}
+\item Run $M$ on $w$.
+\item If it accepts, \textit{accept}.
+\end{enumerate}
+\item Output $\desc{M_1, M_2}$.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\begin{shaded}
+\textbf{ITOC - Rice's Theorem}
+
+\medskip
+Let $P$ be any nontrivial property of the language of a Turing machine. The problem of determining whether a given Turing machine's language has property $P$ is undecidable.
+
+More formally, let $P$ be a language consisting of Turing machine description where $P$ fulfills two conditions. First $P$ is nontrivial - it contains some, but not all, TM descriptions. Second, $P$ is a property of the TM's language - whenever $L(M_1) = L(M_2)$, we have $\desc{M_1} \in P$ iff $\desc{M_2} \in P$. Here, $M_1$ and $M_2$ are any TMs. $P$ is an undecidable language.
+\end{shaded}

@@ -1,0 +1,442 @@
+\subsection{Exercises}
+
+\textbf{8.1} Show that for any function $f:\mathbb{N} \rightarrow \mathbb{R}^+$, where $f(n) \geq n$, the space complexity class SPACE($f(n)$) is the same whether you define the class by using the single tape TM model or the two-tape read-only input TM model.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\label{exe:PSPACE_CLOSURE}
+\textbf{8.4} Show that PSPACE is closed under the operations union, complementation, and star.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\label{lang:ADFA_L}
+\textbf{8.5} Show that $A_\DFA \in L$.
+\begin{mdframed}
+\begin{proof}
+Construct a TM $M$ to decide $A_\DFA$. When $M$ receives input $\desc{A, w}$, a DFA and a string, $M$ simulates $A$ on $w$ by keeping track of $A$’s current state and its current head location, and updating them appropriately. The space required to carry out this simulation is $O(\log n)$ because $M$ can record each of these values by storing a pointer into its input.
+\end{proof}
+\end{mdframed}
+
+\textbf{8.6} Show that any PSPACE-hard language is also NP-hard.
+
+\begin{mdframed}
+\begin{proof}
+First we must show that the language is not in NP. This is trivial since NP is a subset of PSPACE, and therefore, anything outside of PSPACE is also outside of NP.
+
+Then we must show that any problem in NP can be reduced to any PSPACE-hard language. This is also fairly simple, since any SAT problem can be reduced to a TQBF problem by simply appending "there exists $x_n$" to the front of the SAT expression for each variable $x_n$ and then solving it using the TQBF algorithm. Then the TQBF problem can be reduced to any PSPACE-hard problem by the definition of PSPACE-hard because TQBF is PSPACE-complete. Thus, any PSPACE-hard problem is also NP-hard.
+\end{proof}
+\end{mdframed}
+
+\label{exe:NL_CLOSURE}
+\textbf{8.7} Show that NL is closed under the operations union, concatenation, and star.
+
+\begin{mdframed}
+\begin{proof}
+Let $A_1$ and $A_2$ be languages that are decided by NL-machines $N_1$ and $N_2$. Construct three Turing machines: $N_\cup$ deciding $A_1 \cup A_2$; $N_\circ$ deciding $A_1 \circ A_2$; and $N_*$ deciding $A_1^*$. Each of these machines operates as follows.
+
+\medskip
+Machine $N_\cup$ nondeterministically branches to simulate $N_1$ or to simulate $N_2$. In either case, $N_\cup$ accepts if the simulated machine accepts.
+
+\medskip
+Machine $N_\circ$ nondeterministically selects a position on the input to divide it into two substrings. Only a pointer to that position is stored on the work tape (insufficient space is available to store the substrings themselves). Then $N_\circ$ simulates $N_1$ on the first substring, branching nondeterministically to simulate $N_1$’s nondeterminism. On any branch that reaches $N_1$’s accept state, $N_\circ$ simulates $N_2$ on the second substring. On any branch that reaches $N_2$’s accept state, $N_\circ$ accepts.
+
+\medskip
+Machine $N_*$ has a more complex algorithm, so we describe its stages.
+
+\medskip
+$N_*$ = On input $w$:
+\begin{enumerate}
+\item Initialize two input position pointers $p_1$ and $p_2$ to 0, the position immediately preceding the first input symbol.
+\item Accept if no input symbols occur after $p_2$.
+\item Move p2 forward to a nondeterministically selected position.
+\item Simulate $N_1$ on the substring of $w$ from the position following $p_1$ to the position at $p_2$, branching nondeterministically to simulate $N_1$’s nondeterminism.
+\item If this branch of the simulation reaches $N_1$’s accept state, copy $p_2$ to $p_1$ and go to stage 2. If $N_1$ rejects on this branch, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\label{lang:EQREX_PSPACE}
+\textbf{8.8} Let $EQ_\REX = \{ \desc{R, S} \mid \text{$R$ and $S$ are equivalent REX} \}$. Show that $EQ_\REX \in \PSPACE$.
+
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{8.11} Show that if every NP-hard language is also PSAPCE-hard, then PSPACE = NP.
+\begin{mdframed}
+\begin{proof}
+To show that PSPACE = NP, we need to show that $\PSPACE \subseteq \NP$ and $\NP \subseteq \PSPACE$. We already know from the book that $\NP \subseteq \PSPACE$. Thus we only need to show that $\PSPACE \subseteq \NP$, given that every NP-hard language is also PSPACE-hard.
+
+By definition of NP-hardness, every NP-complete language is also NP-hard, thus by the assumption, is also PSPACE-hard. And because $SAT$ is NP-complete, therefore we know that $SAT$ is also PSPACE-hard. 
+
+By definition of PSPACE-hardness, for any language $A \in \PSPACE$, $A \leq_\P SAT$ (because $SAT$ is PSPACE-hard). We then want to show that for any such language $A \in \PSPACE$, $A$ is also in NP ($\PSPACE \subseteq \NP$).
+
+By definition of polynomial time mapping reduction, if $A \leq_\P SAT$, then there exists a TM $M$ which computes function $f$ on $w$ such that $w \in A$ iff $f(w) \in SAT$.
+
+We then build an NDTM $N$ to decide $A$ in polynomial time (to show $A \in \NP$).
+
+\medskip
+$N$ = on input $w$:
+\begin{enumerate}
+\item Call $M$ to compute $f(w)$.
+\item Use decider (NDTM) for $SAT$ to decide $f(w)$.
+\end{enumerate}
+
+We see that $N$ decides $A$, since $w \in A$ iff $f(w) \in SAT$.
+
+Step 1 is polynomial time, step 2 calls an NDTM which is also polynomial time ($SAT \in \NP$), therefore we claim that $A \in \NP$. Therefore, $\PSPACE \subseteq \NP$ and together with $\NP \subseteq \PSPACE$, we get PSPACE = NP, given the assumption.
+\end{proof}
+\end{mdframed}
+
+\textbf{8.12} Show that $TQBF$ restricted to formulas where the part following the quantifiers is in conjunctive normal form is still PSPACE-complete.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{8.15} Consider the following two-person version of the language $PUZZLE$ that was described in Problem 7.28. Each player starts with an ordered stack of puzzle cards. The players take turns placing the cards in order in the box and may choose which
+side faces up. Player I wins if all hole positions are blocked in the final stack, and
+Player II wins if some hole position remains unblocked. Show that the problem of
+determining which player has a winning strategy for a given starting configuration
+of the cards is PSPACE-complete.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{8.16} Read the definition of $MINFORMULA$ in Problem 7.46.
+
+\textbf{a.} Show that $MINFORMULA \in \PSPACE$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Explain why this argument fails to show that $MINFORMULA \in \coNP$:
+
+If $\phi \not \in MINFORMULA$, then $\phi$ has a smaller equivalent formula. An NTM
+can verify that $\phi \in  MINFORMULA$ by guessing that formula.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{8.17} Let $A$ be the language of properly nested parentheses. For example, (()) and (()(())))() is in $B$ but )( is not. Show that $A$ is in L.
+
+\begin{mdframed}
+\begin{proof}
+The following TM $M$ decides $A$ in logspace
+
+\medskip
+$M$ = On input $w$:
+\begin{enumerate}
+\item Initialize a counter to 0 and start scanning from left to right.
+\item If the next symbol is (, add 1 to counter. If the next symbol is ), subtract 1 from counter.
+\item If counter value ever goes below zero, reject.
+\item If after reading all symbols, counter is not 0, reject.
+\item Otherwise, accept.
+\end{enumerate}
+The only space needed is the counter, thus $A \in \L$.
+\end{proof}
+\end{mdframed}
+
+\textbf{8.18} Let $B$ be the language of properly nested parentheses and brackets. For example, ([()()]()[]) is in B but ([)] is not. Show that $B$ is in $L$.
+\begin{mdframed}
+\begin{proof}
+The following machine $M$ decides $B$ in logspace
+
+\medskip
+$M$ = On input $w$:
+\begin{enumerate}
+\item If $w = \epsilon$, accept. Otherwise initialize 
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\label{lang:MULT_L}
+\textbf{8.20} Let $MULT = \{ a\#b\# c \mid a, b, c \text{ are binary natural numbers and } a \times b = c \}$. Show that $MULT \in \L$.
+\begin{mdframed}
+\begin{proof}
+Let us assume, with out loss of generality, that $a = a_n a_{n-1} \cdots a_2 a_1$ and $b = b_n b_{n-1} \cdots b_2 b_1$ where each $a_i$ and $b_i$ can be 0 or 1. We show that the following algorithm uses only log space. 
+
+\begin{enumerate}
+\item Initialize a counter $i=1$, and start counting from $1$ to $n$.
+\item Initialize another counter $k=1$, which point to a bit in $c$.
+\item For each $i$, calculate the corresponding bit of $a\times b$ using the formula 
+\[\sum_{j=1}^i a_j b_{i+1-j} = a_1 b_{i} + a_2 b_{i-1} \cdots + a_i b_1\]
+This is binary addition of single bits, and we just need log space to store the counter $j$, record the carry $d$ and update it every time.
+\item While doing the above steps, check the corresponding bit in $c$. If any bit disagree, \textit{reject}.
+\item Once $i$ reaches $n$, start decreasing $n$ back to $1$. This time use a different formula $\sum_{j=1}^i a_{n+1-j} b_{n-i+j}$. Again, update the carry $d$, and check corresponding bit in $c$.
+\item If all bits agree with $c$, \textit{accept}
+\end{enumerate}
+
+This algorithm uses log space because we just need a few counters, each  in log space. we also need some space to store the carry which is also log space. Finally we need a single bit to store the resulting bit of the addition. Therefore, $MULT \in \L$.
+\end{proof}
+\end{mdframed}
+
+\textbf{8.21} For any positive integer $x$, let $x^R$ be the integer whose binary representation is the reverse of the binary representation of $x$. (Assume no leading 0s in the binary representation of $x$.) Define the function $R^+: \mathbb{N} \rightarrow \mathbb{N}$ where $R^+(x) = x + x^R$.
+
+\textbf{a.} Let $A_2 = \{ \desc{x,y} \mid R^+(x) = y \}$. Show $A_2 \in \L$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+\textbf{b.} Let $A_3 = \{ R^+(R^+(x)) = y\}$. Show $A_3 \in \L$.
+\begin{mdframed}
+\begin{proof}
+\end{proof}
+\end{mdframed}
+
+
+
+\label{lang:ADD_L}
+\textbf{8.22} 
+
+\textbf{a.} Let $ADD = \{ \desc{x, y, z} \mid x, y, z >0 \text{ are binary integers and } x+ y = z\}$. Show that $ADD \in \L$.
+\begin{mdframed}
+\begin{proof}
+The obvious binary addition algorithm working from least significant bit to most significant bit can be implemented in log-space. On the worktape we just need to keep track of which bit of $x$ and $u$ we are adding next and what the carry from the previous bits is.
+\end{proof}
+\end{mdframed}
+
+\label{lang:UCYCLE_L}
+\textbf{8.23} Define 
+\[
+UCYCLE = \{\desc{G} \mid G \text{ is an undirected graph that contains a simple cycle} \}
+\]
+Show that $UCYCLE \in \L$. (Note: $G$ may be a graph that is not connected.)
+\begin{mdframed}
+\begin{proof}
+We can try to search the tree by always traversing the edges incident on a vertex in lexicographic order i.e. if we come in through the $i$th edge, we go out through the $(i+1)\mod d$-th edge, where $d$ is the degree of the vertex. This process performs a DFS on a tree and we always come back to a vertex through the edge we went out on (if it doesn't contain a cycle). However, if the graph contains a cycle, there must exist at least one vertex $u$ and at least one starting edge $(u, v)$ such that if we start the traversal through $(u, v)$, we will come back to $u$ through an edge different than $(u, v)$. Hence, we enumerate all the vertices and all the edges incident on them and start a traversal through each one of them. If we come back to the starting vertex through an edge different than the one we started on, declare that the graph contains a cycle. Since we can enumerate all vertices and edges in log-space and also remember the starting vertex and edge using log-space, $UCYCLE \in \L$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:BIPARTITE_NL}
+\textbf{8.25} An undirected graph is \textbf{bipartite} if its nodes may be divided into two sets so that all edges go from a node in one set to a node in the other set. Show that a graph is bipartite if and only if it does not contain a cycle that has an odd number of nodes. Let $BIPARTITE = \{ \desc{G} \mid G  \text{ is a bipartite graph} \}$. Show that $BIPARTITE \in \NL$.
+
+\begin{mdframed}
+\begin{proof}
+First show that if a graph is bipartite, it must not contain a cycle with an odd number of nodes. Suppose it did contain such a cycle. Label the nodes $n_1, n_2, \ldots, n_{2k}, n_{2k + 1}$. Clearly, if $n_1$ is in some set $A$, then $n_2$ must be in set $B$, so $n_3$ must be in set $A$, etc. By induction, all the nodes with an odd subscript must be in set $A$, and all those with an even subscript must be in set $B$. But this implies that $n_1$ and $n_{2k+1}$ are both in set $A$, a contradiction because they are connected.
+
+\medskip
+Second, we show that if a graph contains no cycles with an odd number of nodes, then the graph is bipartite. Suppose a graph does not contain any odd cycles. Pick a node, and label it $A$. Label all of its neighbors $B$. Label all of their unlabeled neighbors $A$, etc, until all nodes are labeled. Suppose that this construction caused two adjacent nodes $x$ and $y$ to have the same label. Then that would mean that both $x$ and $y$ were reached by taking an odd number of steps from the start node, or both were reached by taking an even number of steps. In either case, the total number of nodes traversed in getting to $x$ from the start node, and getting to $y$ from the start node (excluding the start node itself), is even. But adding the start node in makes the total number of nodes odd, contradicting the hypothesis that there were no odd cycles. Thus the construction succeeds in properly dividing the nodes, so the graph is bipartite.
+
+\medskip
+Finally, we show that $BIPARTITE \in \NL$. Since NL = coNL, it suffices to demonstrate that $\overline {BIPARTITE} \in \NL$, where 
+\[
+\overline {BIPARTITE} = \{ \desc{G} \mid G \text{ is an undirected graph that contains an odd cycle }\}
+\]
+The following machine $M$ works.
+
+\medskip
+$M$ = On input $\desc{G}$, where $G$ is a graph
+\begin{enumerate}
+\item Initialize a counter to 0.
+\item Nondeterministically select a starting node $v$.
+\item Nondeterministically select an odd length $l \leq |V(G)|$.
+\item Nondeterministically select the node in the cycle at each step.
+\item If at the end of $l$ steps we come back to $v$, then we have found an odd cycle, \textit{accept}.
+\item If no such cycle found, \textit{reject}.
+\end{enumerate}
+\end{proof}
+\end{mdframed}
+
+\textbf{8.26} Define $UPATH$ to be the counterpart of $PATH$ for undirected graphs. 
+$UPATH = \{ \desc{G, s, t} \mid \text{$G$ is an undirected graph that has a path from $s$ to $t$} \}$.
+Show that $\overline{BIPARTITE} \leq_\L UPATH$.
+\begin{mdframed}
+\begin{proof}
+\[
+\overline {BIPARTITE} = \{ \desc{G} \mid G \text{ is an undirected graph that contains an odd cycle }\}
+\]
+\end{proof}
+\end{mdframed}
+
+\label{lang:STRCON_NLC}
+\textbf{8.27} A directed graph is \textbf{strongly connected} if every two nodes are connected by a directed path in each direction. Let 
+\[
+STRCON = \{\desc{G} \mid G \text{ is a strongly connected graph} \}
+\]
+Show that $STRCON$ is NL-complete
+\begin{mdframed}
+\begin{proof}
+First we show that $STRCON \in \NL$. Since NL = coNL, we consider the language $\overline{STRCON} = \{ \desc{G} \mid G \text{ is not a strongly connected graph}\}$, this means that there exists two nodes such that they are not connected by a directed path. The following NDTM $M$ decides $\overline{STRCON}$.
+
+\medskip
+$M$ = On input $\desc{G}$, where $G$ is a directed graph,
+\begin{enumerate}
+\item Nondeterministically select two nodes $a$ and $b$
+\item Run decider for $PATH$ on $\desc{G, a, b}$. If it rejects, then the graph is not strongly connected, \textit{accept}; Otherwise, \textit{reject}.
+\end{enumerate}
+
+Since storing two nodes $a$ and $b$ takes log-space and $PATH \in \NL$, so $\overline{STRCON} \in \NL$. Again, since NL = coNL, $STRCON \in \NL$.
+
+\medskip
+Next we show that $STRCON$ is NL-hard, which means every language in $\NL$ is log-space reducible to $STRCON$. We do this by showing that $PATH \leq_\L STRCON$, since $PATH$ is NL-complete. The following log space transducer that computes the reduction function $f$.
+
+\medskip
+$N$ = On input $\desc{G, s, t}$:
+\begin{enumerate}
+\item Copy all of $G$ onto the output tape.
+\item For each node $v$ in $G$, add edges $(v,s)$ and $(t, v)$.
+\end{enumerate}
+
+If there is a path from $s$ to $t$, the constructed graph is strongly connected, because every node can now get to every other node by going through the $s-t$ path. If there is not a path from $s$ to $t$, then the constructed graph is not strongly connected because the only additional edges in the constructed graph go into $s$ and out of $t$, so there can be no new ways of getting from $s$ to $t$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:BOTHNFA_NLC}
+\textbf{8.28} Let
+\[
+BOTH_\NFA = \{\desc{M_1, M_2} \mid \text{$M_1$ and $M_2$ are NFAs where } L(M_1) \cap L(M_2) \neq \emptyset \}
+\]
+Show that $BOTH_\NFA \in \NLC$.
+\begin{mdframed}
+\begin{proof}
+
+\end{proof}
+\end{mdframed}
+
+
+\label{lang:ANFA_NLC}
+\textbf{8.29} Show that $A_\NFA$ is NL-complete.
+\begin{mdframed}
+\begin{proof}
+First show that $A_\NFA \in \NL$. The following machine $M$ decides $A_\NFA$ in nondeterministic logspace.
+
+\medskip
+$M$ = On input $\desc{N, w}$.
+\begin{enumerate}
+\item Simulating $N$ on $w$ via reading each symbol of $w$ one by one.
+\item Put a marker on the start state.
+\item On reading each symbol, nondeterministically select which transition from the current state. Move the marker correspondingly.
+\item If the marker is every put on an accepting state, \textit{accept}; otherwise, \textit{reject}
+\end{enumerate}
+Then only space required is the space to store the marker, hence it is in logspace.
+
+\medskip
+Then show that $PATH \leq_\L A_\NFA$. Hence it is NL-complete.
+
+Given an instance $\desc{G, s, t} \in PATH$, the reduction computes $\desc{M, w} \in A_\NFA$. The reduction works as follow:
+
+Modify $N$ so that there is only a single accepting state, this can be done by adding a new final states and add $\epsilon$-transition from the old final states to the new final states. Call this new NFA $N'$.
+
+Then map nodes of $G$ to states of $N'$, edges of $G$ to transitions between states, $s$ is the start state and $t$ is the final state. This reduction works in logspace, since it can just output nodes and edges onto the output tape of the logspace transducer.
+
+Then if $G$ has a path from $s$ to $t$, then there will be a computation path from the start state to the final state of $N'$ and $N$ will accept $w$. On the other hand, if $G$ has no path from $s$ to $t$, then there will be no computation path from the start state to the final state, hence $N$ will not accept $w$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:EDFA_NLC}
+\textbf{8.30} Show that $E_\DFA$ is NL-complete.
+\begin{mdframed}
+\begin{proof}
+Since NL = coNL, it suffices to show that $E_\DFA$ is coNL-complete, or $\overline{E_\DFA}$ is NL-complete. 
+
+First show that $\overline{E_\DFA} \in \NL$. The following machine $M$ decides $\overline{E_\DFA}$ in nondeterministic logspace.
+
+\medskip
+$M$ = On input $\desc{D}$:
+\begin{enumerate}
+\item Nondeterministically guess a string $w$ that is accepted by $D$.
+\item Verify this by simulating $D$ on $w$, if simulation agrees, \textit{accept}.
+\item If no such string founds, \textit{reject}.
+\end{enumerate}
+This machine works in logspace because simulating DFA on a string takes only logspace, since we only need a few pointers to keep track of the current state and symbol.
+
+\medskip
+Then show that $\overline{E_\DFA}$ is NL-complete, by showing that $\overline{PATH} \leq_\L E_\DFA$. The reduction works as follow:
+
+Given a directed graph $G$ and vertices $s$ and $t$, construct a DFA $D$, such that states of the DFA is the vertices of $G$, the start state is $s$ and the final state is $t$. The alphabet is $\{1, 2, \ldots, d\}$ where $d$ is the maximum out-degree of $G$. Edges in $G$ will be transitions in $D$, if a vertex in $G$ has less than $d$ out-going edges, the rest will just loop back to the same state (vertex).
+
+Now if there is no path from $s$ to $t$ in $G$, then no computation path in $D$ ends in the final states, which means $L(D) = \emptyset$. On the other hand, if there exists a path from $s$ to $t$ in $G$, then there will be a computation path in $D$ ends in the final states, and $L(D) \neq \emptyset$.
+\end{proof}
+\end{mdframed}
+
+\label{lang:2SAT_NLC}
+\textbf{8.31} Show that $2SAT$ is NL-complete.
+\begin{mdframed}
+\begin{proof}
+We want to show that $2SAT$ is NL-complete.
+\[
+2SAT = \{\desc{\phi} \mid \phi \text{ is a 2cnf satisfiable Boolean formula} \}
+\]
+Since NL = coNL, then it suffice to show that $\overline{2SAT}$ is NL-complete. 
+
+\medskip
+We first show that $\overline{2SAT} \in \NL$. Given $\phi \in \overline{2SAT}$, construct a directed graph $G = (V, E)$. For each variable $x_i$ in $\phi$, $G$ will have two vertices $x_i$ and $\overline{x_i}$. And $G$ has an edge $(u, v)$, if $(\overline{u} \vee v)$ is a clause in $\phi$. For $u \neq \overline{w}$, if there is a path from $u$ to $w$ in $G$, then there is also a path from $\overline{w}$ to $\overline{u}$ by reversing the direction of each edge along the path and replacing the literals of each vertex by their complements.
+
+To show that this construction of the graph works, we want to show that $\phi \in \overline{2SAT}$ iff there exists a variable $x$ in $\phi$, such that there is a path in $G$ from $x_i$ to $\overline{x_i}$ and one from $\overline{x_i}$ to $x_i$.
+
+First, if such $x_i$ does exists, then it means that $x \Rightarrow \overline{x}$ and $\overline{x} \Rightarrow x$, this is a contradiction so $\phi$ is not satisfiable.
+
+Second, if $\phi$ is not satisfiable, we can find a variable $x_i$ such that there are paths from $x_i$ to $\overline{x_i}$ and from $\overline{x_i}$ to $x_i$. \textbf{TODO: how to prove this?}.
+
+With this graph construction, we give an NDTM $N$ that decides $\overline{2SAT}$ in log space.
+
+\medskip
+$N$ = On input $\desc{\phi}$ where $\phi$ is a 2cnf Boolean formula:
+\begin{enumerate}
+\item Construct $G$ as described above. In fact, we don't need to construct the graph explicitly, we could use $\phi$ as some sort of representation of the graph.
+\item Nondeterministically select a vertex $u$ in $G$.
+\item Use NL decider for $PATH$ to decide $\desc{G, \overline{u}, u}$ and $\desc{G, u, \overline{u}}$.
+\item If both accept, \textit{accept}; otherwise, \textit{reject}
+\end{enumerate}
+
+This shows that $\overline{2SAT} \in \NL$.
+
+\medskip
+We then show that $\overline{2SAT}$ is NL-hard, by showing $PATH \leq_\L \overline{2SAT}$. To this end, we wish to show a log-space computable function $f$ such that $\desc{G, s, t} \in PATH$ iff $f(\desc{G, s, t}) \in \overline{2SAT}$. The log-space transducer works as follows:
+
+Given an instance $\desc{G, s, t} \in PATH$, where $G$ has $m+2$ vertices $\{s, t, v_1, \ldots, v_m \}$. The resulting 2cnf Boolean formula $\phi$ will have variables $\{x, y_1, \ldots y_m \}$, where we label $s$ with $x$, $t$ with $\overline{x}$, and each $v_i$ with $y_i$. Similar to the previous graph construction, $\phi$ will have a clause $(\overline{u} \vee v)$ if $(u, v)$ is an edge of $G$. It will also have an extra clause $(x \vee x)$ to force $x = 1$.
+
+To show that this construction works, if $\desc{G, s, t} \in PATH$, that is, there exists a path from $s$ to $t$. Then this path is of the form $(s, u_1, \ldots, u_k, t)$. Per the above construction, we know that $\phi = (x \vee x) \wedge (\overline{x} \vee u_1) \wedge (\overline{u_1} \vee u_2) \wedge \cdots \wedge (\overline{u_k} \vee \overline{x})$. This formula is obviously not satisfiable for both $x = 0$ and $x = 1$. Therefore, $\desc{\phi} \in \overline{2SAT}$.
+
+For the other direction, we want to show that if $\desc{\phi} \in \overline{2SAT}$, then $\desc{G, s, t} \in PATH$. To this end, we show the contrapositive which is if $\desc{G, s, t} \in \overline{PATH}$, then $\desc{\phi} \in 2SAT$. Suppose that $G$ has no path from $s$ to $t$. Let $V_s$ be the set of vertices that is reachable from $s$ and $V_t$ be the set of vertices from which $t$ is reachable, and $U$ be the rest of vertices in $G$. And they are pairwise disjoint. A satisfiable assignment would then assign true to all vertices in $V_s \cup U$ and false to all vertices in $V_t$.
+
+Reference: \url{http://cs.brown.edu/people/jes/book/Page.363.364.pdf}
+\end{proof}
+\end{mdframed}
+
+\label{lang:CYCLE_NLC}
+\textbf{8.34} Define
+\[
+CYCLE = \{\desc{G} \mid G \text{ is a directed graph that contains a directed cycle} \}
+\]
+Show that $CYCLE \in \NLC$.
+\begin{mdframed}
+\begin{proof}
+First show that $CYCLE \in \NL$, the following NDTM $M$ decides $CYCLE$ in log space.
+
+\medskip
+$M$ = On input $\desc{G}$, where $G$ is a directed graph:
+\begin{enumerate}
+\item Nondeterministically select a node $v$.
+\item Nondeterministically select the next node from among those pointed at by the current node.
+\item Repeat this action until it reaches node $v$ again and \textit{accepts}, or until it has gone on for $n = |G|$ steps and \textit{rejects}.
+\end{enumerate}
+
+\medskip
+Next, we show that $PATH \leq_\L CYCLE$.
+\end{proof}
+\end{mdframed}
+
+

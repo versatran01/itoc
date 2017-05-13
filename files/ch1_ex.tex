@@ -1,0 +1,106 @@
+\subsection{Exercises}
+\textbf{1.11} Prove that every NFA can be converted to an equivalent one that has a single accept state.
+
+\begin{mdframed}
+\begin{proof}
+Let $N = (Q, \Sigma, \delta, q_0, F)$ be an NFA. Construct an NFA $N'$ with a single accept state that recognizes the same language as $N$. Informally, $N'$ is exactly like $N$ except it has $\epsilon$-transitions from the states corresponding to the accept states of $N$, to a new accept state, $q_\text{accept}$. State $q_\text{accept}$ has no emerging transitions. Formally $N' = (Q\cup \{q_\text{accept}\}, \Sigma, \delta', q_0, \{q_\text{accept}\})$, where for each $q\in Q$ and $a \in \Sigma_\epsilon$
+\[
+\delta'(q, a) = \begin{cases}
+\delta(q, a) & \text{if $a \neq \epsilon$ or $q \not \in F$}\\
+\delta(q, a) \cup \{q_\text{accept}\} & \text{if $a = \epsilon$ and $q \in F$}
+\end{cases}
+\]
+and $\delta'(q_\text{accept}, a) = \emptyset$ for each $a \in \Sigma_\epsilon$.
+\end{proof}
+\end{mdframed}
+
+\textbf{1.29} Using the pumping lemma to show that the following languages are not regular.
+
+\textbf{a.} $A_1 = \set{0^n 1^n 2^n \mid n \geq 0}$
+\begin{mdframed}
+\begin{proof}
+Assume that $A_1 = \set{0^n 1^n 2^n \mid n \geq 0}$ is regular. Let $p$ be the pumping length given by the pumping lemma. Choose $s$ to be the string $0^p 1^p 2^p$. Because $s \in A_1$ and $|s| \geq p$, the pumping lemma guarantees that $s$ can be split into three pieces, $s = xyz$, where for any $i\geq 0$ the string $xy^iz \in A_1$. To satisfy pumping lemma, we must have $|y| > 0$ and $|xy| \leq p$. Therefore, $y$ consists only of $0$s. Hence $xyyz$ will have more $0$s than $1$s and $2$s, thus not a member of $A_1$, a contradiction.
+\end{proof}
+\end{mdframed}
+
+\textbf{c.} $A_3 = \set{a^{2^n} \mid n \geq 0} $
+\begin{mdframed}
+\begin{proof}
+Assume that $A_3 = \set{a^{2^n} \mid n \geq 0}$ is regular. Let $p$ be the pumping length given by the pumping lemma. Choose $s$ to be the string $a^{2^p}$. Because $s$ is a member of $A_3$ and $s$ is longer than $p$, the pumping lemma guarantees that $s$ can be split into three pieces, $s=xyz$, satisfying the three conditions of the pumping lemma.
+
+The Third condition tells us that $|xy| \leq p$. Furthermore, $p < 2^p$ and so $|y| < 2^p$. Therefore, $|xyyz| = |xyz| + |y| < 2^p + 2^p = 2^{p+1}$. The second condition requires $|y| > 0$ so $2^p < |xyyz| < 2^{p+1}$. Therefore the length of $xyyz$ cannot be a power of $2$. Hence $xyyz$ is not a member of $A_3$, a contradiction.
+\end{proof}
+\end{mdframed}
+
+\subsection{Problems}
+
+\textbf{1.31} For any string $w = w_1 w_2 \cdots w_n$, the \textbf{reverse} of $w$, written $w^R$, is the string $w$ in reverse order, $w_n \cdots, w_2, w_1$. For any language $A$, let $A^R = \{ w^R \mid w \in A\}$. Show that if $A$ is regular, so is $A^R$.
+
+\begin{mdframed}
+\begin{proof}
+$A$ is regular then there exists a DFA $D$ that recognizes $A$. We then construct a NFA $N$ from $A$, that recognizes $A^R$. The construction works as follows.
+
+\begin{enumerate}
+\item Reverse all the arrows of $D$.
+\item Make the start state of $D$ be the only accept state of $N$.
+\item Add a new start state $q_0'$ to $N$, and add $\epsilon$-transitions from $q_0'$ to all the old accepting state of $D$.
+\item Make all the old accepting states of $D$ normal states in $N$.
+\end{enumerate}
+
+Formal definition of $N$.
+\begin{enumerate}
+\item $Q' = Q \cup \{q_0'\}$.
+
+The states of $N$ are the states of $M$, with the addition of a new start state $q_0'$.
+
+\item The state $q_0'$ is the start state of $N$.
+
+\item The set of accept states $F' = \{ q_0 \}$.
+
+\item Define $\delta$ so that for any $q \in Q'$ and $a \in \Sigma_\epsilon$,
+\[
+\delta'(q, a) = 
+\begin{cases}
+F, 			& \text{if } q = q_0',\  a = \epsilon \\
+\emptyset, 	& \text{if } q = q_0',\  a \neq \epsilon \\
+\{p \mid \delta(p, a) = q\}, & \text{if } q \in Q
+\end{cases}
+\]
+\end{enumerate}
+
+It is easy to verify that for any $w \in \Sigma^*$, there is a path following $w$ from the start state to an accept state in $D$ iff there is a path following $w^R$ from $q_0'$ to $q_\text{accept}'$ in $N$. It then follows that $w \in A$ iff $w^R \in A^R$.
+\end{proof}
+\end{mdframed}
+
+\textbf{1.38} An \textbf{all}-NFA $M$ is a 5-tuple $(Q, \Sigma, \delta, q_0, F)$ that accepts $x \in \Sigma^*$ if every possible state that $M$ could be in after reading input $x$ is a state from $F$. Prove that all-NFAs recognize the class of regular languages.
+
+\begin{mdframed}
+\begin{proof}
+There are two directions in this proof.
+
+\medskip
+We first show that if a language is regular, then it can be recognized by an all-NFA.
+
+If a language is regular, then it can be recognized by a DFA. But a DFA is also an all-NFA. Since a DFA has only one possible final state, and that state is an accept state.
+
+
+\medskip 
+We then show that given an all-NFA, the language it recognizes is regular.
+
+Let $M = (Q, \Sigma, \delta, q_0, F)$ be an all-NFA and $A = L(M)$ be the language that $M$ recognizes. We construct a standard NFA $N = (Q, \Sigma, \delta, q_0, Q - F)$. 
+
+Let $s \in A$, then $M$ accepts $s$. By definition of all-NFAs, all possible final states of $s$ is a state from $F$. If we then pass $s$ to $N$, no possible states of $s$ will be in $Q - F$, because they will all be in $F$. This means $x$ is not accepted by $N$. Thus, $A = \overline{L(N)}$. Since regular language is closed under complement, and $L(N)$ is regular, $A = \overline{L(N)} = L(M)$ must also be regular.
+\end{proof}
+\end{mdframed}
+
+\textbf{1.53} Let $\Sigma = \{0, 1, +, = \}$ and 
+\[
+ADD = \{x = y+z  \mid x, y, z \text{ are binary integers, and $x$ is the sum of $y$ and $z$}\}
+\]
+Show that $ADD$ is not regular.
+
+\begin{mdframed}
+\begin{proof}
+Use pumping lemma to show that $ADD$ is not regular. Assume that $ADD$ is regular. Let $p$ be the pumping length given by the pumping lemma. Choose $s = (1^p = 1^{p-1}0 + 1)$. Since $s \in ADD$ and $|s| \geq p$, then the pumping lemma guarantees that $s$ can be split into three pieces, $s= xyz$. To satisfy pumping lemma, we must have $|y| > 0$ and $|xy| \leq p$. Therefore, $y$ consists only of 1s, say $|y| = 1^k$, where $0 < k \leq p$. Then $xyyz = (1^{p+k} = 1^{p-1}0 + 1) \not \in ADD$. This is a contradiction and thus $ADD$ is not regular.
+\end{proof}
+\end{mdframed}
